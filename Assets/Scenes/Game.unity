@@ -304,6 +304,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1338062833}
   - component: {fileID: 1338062832}
+  - component: {fileID: 1338062834}
   m_Layer: 0
   m_Name: _GameManager
   m_TagString: Untagged
@@ -337,3 +338,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1338062834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338062831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd9e8198de378904b853e3b55a12605b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellDictionary:
+    _Buckets: 00000000030000000200000001000000ffffffffffffffffffffffff
+    _HashCodes: 00000000030000000200000001000000000000000000000000000000
+    _Next: ffffffffffffffffffffffffffffffff000000000000000000000000
+    _Count: 4
+    _Version: 29
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys: 00000000030000000200000001000000000000000000000000000000
+    _Values:
+    - {fileID: 9105488583759699726, guid: 6d3399d8ba956314ebaf3e6ed335b00f, type: 3}
+    - {fileID: 4908024769380900713, guid: eafbccb1136b3a74e80c5b3268609b73, type: 3}
+    - {fileID: 2294698175933248364, guid: de2884c18252a49499cee12f735533f2, type: 3}
+    - {fileID: 706604345032125333, guid: a454752b566276e408dec3b9ac70f657, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}

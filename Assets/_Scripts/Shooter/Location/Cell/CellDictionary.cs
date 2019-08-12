@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Hedge.Tools;
 
 namespace Shooter.Location
 {
-    public class Ground : Cell
+    [System.Serializable]
+    public class CellDictionary : SerializableDictionary<CellType, Cell>
     {
-
     }
 }

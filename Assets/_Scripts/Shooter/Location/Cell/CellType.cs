@@ -1,6 +1,6 @@
 ﻿namespace Shooter.Location
 {
-    public enum CellType
+        public enum CellType
     {
         Ground,
         Grass,
