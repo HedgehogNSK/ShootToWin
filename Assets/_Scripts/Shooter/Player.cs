@@ -7,7 +7,7 @@ using Hedge.Tools;
 namespace Shooter
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class Player : Dweller
+    public class Player : Dweller, IHitable
     {
         [SerializeField] float damage = 20;
         public float Damage => damage;
@@ -47,6 +47,7 @@ namespace Shooter
 #endif
         }
 
+        [SerializeField]LayerMask layerMask;
         private void Rotate()
         {
 
@@ -54,7 +55,7 @@ namespace Shooter
             Camera cam = Camera.main;            
 
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray,out RaycastHit raycastHit))
+            if(Physics.Raycast(ray,out RaycastHit raycastHit,20,layerMask,QueryTriggerInteraction.Ignore))
             {
                 transform.LookAt(raycastHit.point.XZ()+transform.position.Y(), Vector3.up);
             }
@@ -72,8 +73,15 @@ namespace Shooter
             weapon.Attack(transform.forward);
         }
 
+        public void Strike(HitInfo hit)
+        {
+            Health -= hit.Damage;
+        }
 
-
+        protected override void Die()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -401,6 +401,9 @@ MonoBehaviour:
   health: 100
   speed: 5
   damage: 20
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!54 &1112403850
 Rigidbody:
   m_ObjectHideFlags: 0
