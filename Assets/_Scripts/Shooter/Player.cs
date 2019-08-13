@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Hedge.Tools;
 
 namespace Shooter
 {
@@ -11,36 +12,64 @@ namespace Shooter
         [SerializeField] float damage = 20;
         public float Damage => damage;
         Rigidbody rigid;
-        Vector3 moveDirection;
-        Vector3 eyesDirection;
+        IWeapon weapon;
+
         private void Awake()
         {
-            rigid = GetComponent<Rigidbody>();        
+            rigid = GetComponent<Rigidbody>();
+            weapon = GetComponentInChildren<Gun>();
+
+
         }
 
         private void FixedUpdate()
         {
             Move();
+            Rotate();
+#if KEYBOARD
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                Attack();
+#endif 
         }
        
         private void Move()
         {
 #if KEYBOARD
-            Vector3 currentDir = Vector3.zero;
-            if (Input.GetKey(KeyCode.UpArrow)) currentDir += Vector3.forward;
-            if (Input.GetKey(KeyCode.DownArrow)) currentDir += Vector3.back;
-            if (Input.GetKey(KeyCode.LeftArrow)) currentDir += Vector3.left;
-            if (Input.GetKey(KeyCode.RightArrow)) currentDir += Vector3.right;
+            Vector3 movementDirection = Vector3.zero;
+            if (Input.GetKey(KeyCode.UpArrow)) movementDirection += Vector3.forward;
+            if (Input.GetKey(KeyCode.DownArrow)) movementDirection += Vector3.back;
+            if (Input.GetKey(KeyCode.LeftArrow)) movementDirection += Vector3.left;
+            if (Input.GetKey(KeyCode.RightArrow)) movementDirection += Vector3.right;
 
-            rigid.MovePosition(Speed * currentDir.normalized * Time.fixedDeltaTime + rigid.position);
+            rigid.MovePosition(Speed * movementDirection.normalized * Time.fixedDeltaTime + rigid.position);
 #else
             rigid.velocity = Speed * direction;
 #endif
         }
 
+        private void Rotate()
+        {
+
+#if KEYBOARD
+            Camera cam = Camera.main;            
+
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if(Physics.Raycast(ray,out RaycastHit raycastHit))
+            {
+                transform.LookAt(raycastHit.point.XZ()+transform.position.Y(), Vector3.up);
+            }
+#endif
+        }
         public void SetDirection(Vector3 joystickDirection)
         {
 
+        }
+
+        public void Attack()
+        {
+
+            if (weapon==null) return;
+            weapon.Attack(transform.forward);
         }
 
 

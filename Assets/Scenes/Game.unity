@@ -133,7 +133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.05
+      value: 0.58
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalPosition.y
@@ -141,23 +141,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.51
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.000000021855692
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00000004371139
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00000004371139
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_RootOrder
@@ -169,11 +169,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597016263, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
+      propertyPath: baseRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1597016263, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
+      propertyPath: baseShotSpread
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae6b126c1d9adab459835f9a43302988, type: 3}
@@ -371,7 +379,7 @@ GameObject:
   - component: {fileID: 1112403853}
   - component: {fileID: 1112403852}
   - component: {fileID: 1112403849}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
