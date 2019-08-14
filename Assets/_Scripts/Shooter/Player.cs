@@ -13,12 +13,12 @@ namespace Shooter
         public float Damage => damage;
         Rigidbody rigid;
         IWeapon weapon;
-
+        Collider collider;
         private void Awake()
         {
             rigid = GetComponent<Rigidbody>();
             weapon = GetComponentInChildren<Gun>();
-
+            collider = GetComponent<Collider>();
 
         }
 
@@ -70,7 +70,7 @@ namespace Shooter
         {
 
             if (weapon==null) return;
-            weapon.Attack(transform.forward);
+            weapon.Attack(collider.ClosestPointOnBounds(collider.bounds.center+transform.forward), transform.forward);
         }
 
         public void Strike(HitInfo hit)

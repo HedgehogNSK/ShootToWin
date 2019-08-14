@@ -10,7 +10,7 @@ namespace Shooter
         int Damage { get; }        
         float AttackDispersion { get; }
         float Range { get; }
-        void Attack(Vector3 direction);
+        void Attack(Vector3 origin,Vector3 direction);
     }
 }
 
