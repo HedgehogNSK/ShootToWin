@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Hedge.Tools;
+using Controllers.Mobile;
 
 namespace Shooter
 {
@@ -13,12 +13,16 @@ namespace Shooter
         public float Damage => damage;
         Rigidbody rigid;
         IWeapon weapon;
-        Collider collider;
+        new Collider collider;
+        Vector3 movementDirection;
         private void Awake()
         {
             rigid = GetComponent<Rigidbody>();
             weapon = GetComponentInChildren<Gun>();
             collider = GetComponent<Collider>();
+
+           MoveJoystick.OnMove += SetMoveDirection;
+           AttackJoystick.OnAim += TakeAim;
 
         }
 
@@ -34,17 +38,18 @@ namespace Shooter
        
         private void Move()
         {
+
 #if KEYBOARD
-            Vector3 movementDirection = Vector3.zero;
+            movementDirection = Vector3.zero;
             if (Input.GetKey(KeyCode.UpArrow)) movementDirection += Vector3.forward;
             if (Input.GetKey(KeyCode.DownArrow)) movementDirection += Vector3.back;
             if (Input.GetKey(KeyCode.LeftArrow)) movementDirection += Vector3.left;
             if (Input.GetKey(KeyCode.RightArrow)) movementDirection += Vector3.right;
 
-            rigid.MovePosition(Speed * movementDirection.normalized * Time.fixedDeltaTime + rigid.position);
-#else
-            rigid.velocity = Speed * direction;
 #endif
+
+            rigid.MovePosition(Speed * movementDirection.normalized * Time.fixedDeltaTime + rigid.position);
+
         }
 
         [SerializeField]LayerMask layerMask;
@@ -61,27 +66,49 @@ namespace Shooter
             }
 #endif
         }
-        public void SetDirection(Vector3 joystickDirection)
+        public void SetMoveDirection(Joystick joystick, Vector2 direction)
         {
-
+            movementDirection = direction.normalized;
         }
 
-        public void Attack()
+        protected void TakeAim(Joystick joystick,Vector2 forward,bool fire)
+        {
+            SetRotation(forward);
+            if (fire) Attack();
+        }
+        protected void SetRotation( Vector2 forward)
+        {
+            rigid.MoveRotation(Quaternion.Euler(forward));
+        }
+
+        protected void Attack()
         {
 
             if (weapon==null) return;
             weapon.Attack(collider.ClosestPointOnBounds(collider.bounds.center+transform.forward), transform.forward);
         }
 
-        public void Strike(HitInfo hit)
+        public void Strike(HitArgs hit)
         {
             Health -= hit.Damage;
+            if (Health <= 0 && hit.Attacker != null)
+            {
+               
+
+            }
+                
         }
 
+        public void OnDestroy()
+        {
+            MoveJoystick.OnMove -= SetMoveDirection;
+            AttackJoystick.OnAim -= TakeAim;
+        }
         protected override void Die()
         {
             throw new NotImplementedException();
         }
+
     }
 }
 
