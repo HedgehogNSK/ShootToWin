@@ -26,7 +26,7 @@ namespace Shooter
             return this;
         }
 
-        public HitArgsBuilder SetAttacker(Dweller attacker)
+        public HitArgsBuilder SetAttacker(IAttacker attacker)
         {
             hit.Attacker = attacker;
             return this;

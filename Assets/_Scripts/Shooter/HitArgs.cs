@@ -10,7 +10,7 @@ namespace Shooter
         public int Damage { get; set; }
         public Vector3 Direction { get; set; }
         public float Distance { get; set; }
-        public Dweller Attacker { get; set; }
+        public IAttacker Attacker { get; set; }
 
 
         public static HitArgsBuilder CreateBuilder()

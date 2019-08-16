@@ -5,7 +5,7 @@ using System.Linq;
 using Hedge.Tools;
 namespace Shooter
 {
-    public class Gun : MonoBehaviour, IWeapon
+    public class Gun : Weapon
     {
         [SerializeField] int baseDamage = 20;
         [SerializeField] float baseReloadTime = 3;
@@ -17,10 +17,10 @@ namespace Shooter
         [SerializeField] ParticleSystem particlePrefab;
         ParticleSystem particle;
         [SerializeField] Transform muzzle;
-        public int Damage => baseDamage;
-        public float ReloadTime => baseReloadTime;
-        public float AttackDispersion => baseShotSpread;
-        public float Range => baseRange;
+        public override int Damage => baseDamage;
+        public override float ReloadTime => baseReloadTime;
+        public override float AttackDispersion => baseShotSpread;
+        public override float Range => baseRange;
 
         //Step in degrees for Raycasting area in front of weapon
         float deltaAngle = 5;
@@ -32,16 +32,17 @@ namespace Shooter
 #endif
             lastShot = -ReloadTime;
         }
-        public void Attack(Vector3 origin,Vector3 direction)
+        public override void Attack(IAttacker attacker,Vector3 direction)
         {
             if (!IsAvailableToShoot) return;
-
-            foreach (RaycastHit hit in GetAllHits(origin, direction))
+            IEnumerable<RaycastHit> allhits = GetAllHits(transform.position, direction);
+            allhits = allhits.Except(allhits.Where(hit => hit.transform.GetComponent<IAttacker>().Equals(attacker)));
+            foreach (RaycastHit hit in allhits)
             {
                 IHitable target = hit.collider.gameObject.GetComponent<IHitable>();
                 if (target != null)
                 {
-                    HitArgs hitInfo = HitArgs.CreateBuilder().SetDamage(Damage).SetDirection(direction);
+                    HitArgs hitInfo = HitArgs.CreateBuilder().SetDamage(Damage).SetDirection(direction).SetAttacker(attacker);
                     target.GetStrike(hitInfo);
                 }
 

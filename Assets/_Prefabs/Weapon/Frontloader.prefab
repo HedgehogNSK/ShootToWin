@@ -112,7 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseDamage: 20
-  baseReloadTime: 3
+  baseReloadTime: 1
   baseRange: 3
   baseShotSpread: 30
   affectedLayers:
@@ -121,6 +121,8 @@ MonoBehaviour:
   shieldLayers:
     serializedVersion: 2
     m_Bits: 512
+  particlePrefab: {fileID: 19800014, guid: 5332791ebce075d4a9e56f4581e7fb47, type: 3}
+  muzzle: {fileID: 8352471757867883902}
 --- !u!1 &6288085749665833520
 GameObject:
   m_ObjectHideFlags: 0
@@ -145,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6288085749665833520}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.41, y: 0, z: 0.04}
+  m_LocalPosition: {x: 1.54, y: 0, z: 0.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4969244666532253066}

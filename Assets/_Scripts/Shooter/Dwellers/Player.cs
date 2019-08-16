@@ -7,21 +7,24 @@ using Hedge.UI;
 namespace Shooter
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class Player : Dweller, IHitable
+    sealed public class Player : Dweller, IHitable, IAttacker
     {
-        [SerializeField] float damage = 20;
-        public float Damage => damage;
+        [SerializeField] Transform hand;
+        [SerializeField] Weapon weaponPrefab;
+        Weapon weapon;
+
         Rigidbody rigid;
-        IWeapon weapon;
         new Collider collider;
         Vector3 movementDirection;
+
+
         int frags;
         public int Frags
         {
             get { return frags; }
             set
             {
-                if (value > 0)
+                if (value >= 0)
                 {
                     frags = value;
                     CounterText.Update?.Invoke(TextType.Points, frags) ;
@@ -32,14 +35,20 @@ namespace Shooter
                 
             }
         }
+
+        public event Action<IHitable> OnDead;
+
         private void Awake()
         {
             rigid = GetComponent<Rigidbody>();
             weapon = GetComponentInChildren<Gun>();
             collider = GetComponent<Collider>();
 
+            weapon = Instantiate(weaponPrefab,hand);
+
            MoveJoystick.OnMove += SetMoveDirection;
            AttackJoystick.OnAim += TakeAim;
+           Frags = 0;
 
         }
 
@@ -68,8 +77,7 @@ namespace Shooter
             rigid.MovePosition(Speed * movementDirection.normalized * Time.fixedDeltaTime + rigid.position);
 
         }
-
-        [SerializeField]LayerMask layerMask;
+        
         private void Rotate()
         {
 
@@ -88,33 +96,33 @@ namespace Shooter
             movementDirection = new Vector3(direction.x,0,direction.y).normalized;
         }
 
-        protected void TakeAim(Joystick joystick,Vector2 forward,bool fire)
+        public void TakeAim(Joystick joystick,Vector2 forward,bool fire)
         {
             
             if (fire) Attack();
             else
                 SetRotation(forward);
         }
-        protected void SetRotation( Vector2 forward)
+        void SetRotation( Vector2 forward)
         {
             
             rigid.MoveRotation(Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y),Vector3.up));
         }
 
-        protected void Attack()
+        void Attack()
         {
 
-            if (weapon==null) return;
-            weapon.Attack(collider.ClosestPointOnBounds(collider.bounds.center+transform.forward), transform.forward);
+            if (weapon==null) return;            
+            weapon.Attack(this, transform.forward);
         }
 
         public void GetStrike(HitArgs hit)
         {
+            int healthBefore = Health;
             Health -= hit.Damage;
-            if (Health <= 0 && hit.Attacker != null)
+            if (healthBefore>0 && Health <= 0 && hit.Attacker != null)
             {
-               
-
+                hit.Attacker.AddKill(this);
             }
                 
         }
@@ -125,10 +133,19 @@ namespace Shooter
             AttackJoystick.OnAim -= TakeAim;
         }
         protected override void Die()
-        {
-            throw new NotImplementedException();
-        }
+        {           
+            OnDead?.Invoke(this);
+            DieAnimation();
 
+        }
+        void DieAnimation()
+        {
+            Destroy(gameObject);
+        }
+        public void AddKill(IHitable target)
+        {
+            Frags++;
+        }
     }
 }
 

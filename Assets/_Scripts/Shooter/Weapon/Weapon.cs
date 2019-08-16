@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Shooter
 {
-    public interface IWeapon
+    public abstract class Weapon: MonoBehaviour
     {
-        float ReloadTime { get; }
-        int Damage { get; }        
-        float AttackDispersion { get; }
-        float Range { get; }
-        void Attack(Vector3 origin,Vector3 direction);
+        public abstract float ReloadTime { get; }
+        public abstract int Damage { get; }        
+        public abstract float AttackDispersion { get; }
+        public abstract float Range { get; }
+        public abstract void Attack(IAttacker attacker,Vector3 direction);
     }
 }
 

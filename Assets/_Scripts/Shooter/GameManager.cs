@@ -6,14 +6,19 @@ namespace Shooter
 {
     public class GameManager : MonoBehaviour
     {
-        [SerializeField]Camera cam;
-        [SerializeField]Player player;
+        [SerializeField] Camera cam;
         [SerializeField] Vector3 camOffset;
+        [SerializeField] Location.BattleField battleFieldPrefab;
+        [SerializeField] Player playerPrefab;
+
+
+        Location.BattleField battleField;
+        Player myPlayer;
         // Start is called before the first frame update
         void Start()
         {
             cam = Camera.main;
-            player = FindObjectOfType<Player>();
+            LoadGame();
         }
 
         // Update is called once per frame
@@ -21,14 +26,24 @@ namespace Shooter
         {
             MoveCamera();
         }
-        private void Init()
+        private void LoadGame()
         {
-            
+            battleField = Instantiate(battleFieldPrefab);
+            battleField.Generate(20,20);
+            myPlayer = Instantiate(playerPrefab);
+            myPlayer.SetPosition(battleField.GetRandomPositionFree2Walk);
+        }
+
+        private void UnloadGame()
+        {
+            Destroy(battleField);
+            Destroy(myPlayer);
         }
 
         void MoveCamera()
         {
-            cam.transform.position = player.transform.position +camOffset;
+            if(myPlayer)
+            cam.transform.position = myPlayer.transform.position +camOffset;
         }
     }
 }

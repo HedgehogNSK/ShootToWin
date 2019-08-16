@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Hedge.Tools;
-
+using System.Linq;
 namespace Shooter.Location
 {
    
@@ -15,12 +14,7 @@ namespace Shooter.Location
         List<Cell> borderCells;
         Transform parentDir;
 
-        int height = 20;
-        int width = 20;
-        void Start()
-        {            
-            Generate(height, width);
-        }
+
 #if KEYBOARD
         void Update()
         {
@@ -83,6 +77,30 @@ namespace Shooter.Location
                 borderCells.Clear();
 
             parentDir = new GameObject("Location").transform;
+        }
+
+        public Vector3 GetRandomPositionFree2Walk {
+            get
+            {
+                if (battleCells == null)
+                {
+                    Debug.LogError("Battle Cells aren't been created yet");
+                    return Vector3.zero;
+                }
+
+                List<Cell> groundCells = new List<Cell>();
+                for (int i =0; i!= battleCells.GetLength(0); i++)
+                {
+                    for(int j=0; j!= battleCells.GetLength(1);j++)
+                    {
+                        if (battleCells[i, j] is Ground)
+                            groundCells.Add(battleCells[i,j]);
+                    }
+
+                }               
+                int rand = Random.Range(0, groundCells.Count);
+                return groundCells[rand].transform.position;
+            }
         }
 
     }
