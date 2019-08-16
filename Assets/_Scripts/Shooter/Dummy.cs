@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Shooter {
     public class Dummy : Dweller, IHitable
     {
-        public void Strike(HitArgs hit)
+        public void GetStrike(HitArgs hit)
         {
             Debug.Log("[GameObject]:" +gameObject.name+" got " + hit.Damage + " damage");            
         }

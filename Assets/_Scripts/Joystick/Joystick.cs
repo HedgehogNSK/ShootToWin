@@ -23,7 +23,7 @@ namespace Controllers.Mobile
         
         public virtual void OnDrag(PointerEventData eventData)
         {
-            CalcInput(eventData);
+            input = CalcInput(eventData);           
             joystickHandle.anchoredPosition = handleStartPosition +input * joystickBase.sizeDelta / 2 * canvas.scaleFactor* handlerRange;
 
         }
@@ -57,7 +57,7 @@ namespace Controllers.Mobile
         {
             released = true;
             joystickHandle.anchoredPosition = handleStartPosition;
-            input = Vector2.zero;
+           
         }
         
         protected void Awake()

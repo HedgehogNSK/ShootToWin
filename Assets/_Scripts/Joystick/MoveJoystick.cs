@@ -19,12 +19,14 @@ namespace Controllers.Mobile
         {
             base.OnPointerDown(eventData);
             joystickHandle.position = eventData.pressPosition;
+
             OnMove?.Invoke(this, input);
         }
 
         public override void OnPointerUp(PointerEventData eventData)
         {
             base.OnPointerUp(eventData);
+            input = Vector2.zero;
             OnMove?.Invoke(this, input);
         }
     }

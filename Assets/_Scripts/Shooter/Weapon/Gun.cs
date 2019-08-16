@@ -41,8 +41,8 @@ namespace Shooter
                 IHitable target = hit.collider.gameObject.GetComponent<IHitable>();
                 if (target != null)
                 {
-                    HitArgs hitInfo = new HitArgs(Damage);
-                    target.Strike(hitInfo);
+                    HitArgs hitInfo = HitArgs.CreateBuilder().SetDamage(Damage).SetDirection(direction);
+                    target.GetStrike(hitInfo);
                 }
 
             }

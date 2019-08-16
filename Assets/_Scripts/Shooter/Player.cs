@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Controllers.Mobile;
-
+using Hedge.UI;
 namespace Shooter
 {
     [RequireComponent(typeof(Rigidbody))]
@@ -15,6 +15,23 @@ namespace Shooter
         IWeapon weapon;
         new Collider collider;
         Vector3 movementDirection;
+        int frags;
+        public int Frags
+        {
+            get { return frags; }
+            set
+            {
+                if (value > 0)
+                {
+                    frags = value;
+                    CounterText.Update?.Invoke(TextType.Points, frags) ;
+                    
+            }
+                else
+                    Debug.LogError("Amount of frags can't be negative");
+                
+            }
+        }
         private void Awake()
         {
             rigid = GetComponent<Rigidbody>();
@@ -68,17 +85,20 @@ namespace Shooter
         }
         public void SetMoveDirection(Joystick joystick, Vector2 direction)
         {
-            movementDirection = direction.normalized;
+            movementDirection = new Vector3(direction.x,0,direction.y).normalized;
         }
 
         protected void TakeAim(Joystick joystick,Vector2 forward,bool fire)
         {
-            SetRotation(forward);
+            
             if (fire) Attack();
+            else
+                SetRotation(forward);
         }
         protected void SetRotation( Vector2 forward)
         {
-            rigid.MoveRotation(Quaternion.Euler(forward));
+            
+            rigid.MoveRotation(Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y),Vector3.up));
         }
 
         protected void Attack()
@@ -88,7 +108,7 @@ namespace Shooter
             weapon.Attack(collider.ClosestPointOnBounds(collider.bounds.center+transform.forward), transform.forward);
         }
 
-        public void Strike(HitArgs hit)
+        public void GetStrike(HitArgs hit)
         {
             Health -= hit.Damage;
             if (Health <= 0 && hit.Attacker != null)

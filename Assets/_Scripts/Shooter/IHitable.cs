@@ -6,7 +6,7 @@ namespace Shooter
 {
     public interface IHitable
     {
-        void Strike(HitArgs hit);
+        void GetStrike(HitArgs hit);
     }
 }
 
