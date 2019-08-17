@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 namespace Shooter
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : NetworkBehaviour
     {
+#pragma warning disable CS0649
         [SerializeField] Camera cam;
         [SerializeField] Vector3 camOffset;
         [SerializeField] Location.BattleField battleFieldPrefab;
         [SerializeField] Player playerPrefab;
-
+#pragma warning restore CS0649
 
         Location.BattleField battleField;
         Player myPlayer;
@@ -30,8 +32,8 @@ namespace Shooter
         {
             battleField = Instantiate(battleFieldPrefab);
             battleField.Generate(20,20);
-            myPlayer = Instantiate(playerPrefab);
-            myPlayer.SetPosition(battleField.GetRandomPositionFree2Walk);
+            //myPlayer = Instantiate(playerPrefab);
+            //myPlayer.SetPosition(battleField.GetRandomPositionFree2Walk);
         }
 
         private void UnloadGame()

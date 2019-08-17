@@ -7,6 +7,7 @@ namespace Shooter
 {
     public class Gun : Weapon
     {
+#pragma warning disable CS0649
         [SerializeField] int baseDamage = 20;
         [SerializeField] float baseReloadTime = 3;
         [SerializeField] float baseRange = 5;
@@ -14,9 +15,11 @@ namespace Shooter
         [SerializeField] LayerMask affectedLayers;
         [SerializeField] LayerMask shieldLayers;
         [Space]
-        [SerializeField] ParticleSystem particlePrefab;
-        ParticleSystem particle;
+        [SerializeField] ParticleSystem particlePrefab;       
         [SerializeField] Transform muzzle;
+#pragma warning restore CS0649
+
+        ParticleSystem particle;
         public override int Damage => baseDamage;
         public override float ReloadTime => baseReloadTime;
         public override float AttackDispersion => baseShotSpread;

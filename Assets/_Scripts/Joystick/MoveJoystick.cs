@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+
 namespace Controllers.Mobile
 {
     public class MoveJoystick : Joystick
@@ -21,6 +22,7 @@ namespace Controllers.Mobile
             joystickHandle.position = eventData.pressPosition;
 
             OnMove?.Invoke(this, input);
+            
         }
 
         public override void OnPointerUp(PointerEventData eventData)

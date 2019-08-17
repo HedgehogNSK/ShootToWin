@@ -4,13 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Controllers.Mobile;
 using Hedge.UI;
+using Mirror;
+
 namespace Shooter
 {
     [RequireComponent(typeof(Rigidbody))]
     sealed public class Player : Dweller, IHitable, IAttacker
     {
+#pragma warning disable CS0649
+
         [SerializeField] Transform hand;
         [SerializeField] Weapon weaponPrefab;
+#pragma warning restore CS0649
+
         Weapon weapon;
 
         Rigidbody rigid;
@@ -54,6 +60,9 @@ namespace Shooter
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer)
+                return;
+
             Move();
             Rotate();
 #if KEYBOARD
