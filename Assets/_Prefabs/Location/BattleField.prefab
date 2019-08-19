@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3257066596047906214}
   - component: {fileID: 8868673063810187324}
+  - component: {fileID: 7232347919798288420}
   m_Layer: 0
   m_Name: BattleField
   m_TagString: Untagged
@@ -43,12 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd9e8198de378904b853e3b55a12605b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncInterval: 0.1
   cellDictionary:
     _Buckets: 00000000030000000200000001000000ffffffffffffffffffffffff
     _HashCodes: 00000000030000000200000001000000000000000000000000000000
     _Next: ffffffffffffffffffffffffffffffff000000000000000000000000
     _Count: 4
-    _Version: 29
+    _Version: 30
     _FreeList: -1
     _FreeCount: 0
     _Keys: 00000000030000000200000001000000000000000000000000000000
@@ -56,7 +58,23 @@ MonoBehaviour:
     - {fileID: 9105488583759699726, guid: 6d3399d8ba956314ebaf3e6ed335b00f, type: 3}
     - {fileID: 4908024769380900713, guid: eafbccb1136b3a74e80c5b3268609b73, type: 3}
     - {fileID: 2294698175933248364, guid: de2884c18252a49499cee12f735533f2, type: 3}
-    - {fileID: 706604345032125333, guid: a454752b566276e408dec3b9ac70f657, type: 3}
+    - {fileID: 5372758539231178320, guid: 35055e29783e3fc43b8d0dee9cd123c9, type: 3}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
+--- !u!114 &7232347919798288420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933272599788761773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverOnly: 0
+  localPlayerAuthority: 0
+  m_AssetId: 
+  m_SceneId: 1500252988

@@ -24,7 +24,7 @@ namespace Shooter
         Vector3 movementDirection;
 
 
-        int frags;
+        [SyncVar]int frags;
         public int Frags
         {
             get { return frags; }
@@ -50,19 +50,24 @@ namespace Shooter
             weapon = GetComponentInChildren<Gun>();
             collider = GetComponent<Collider>();
 
-            weapon = Instantiate(weaponPrefab,hand);
+            weapon = Instantiate(weaponPrefab, hand);
+               
+           
+           
+        }
 
-           MoveJoystick.OnMove += SetMoveDirection;
-           AttackJoystick.OnAim += TakeAim;
-           Frags = 0;
-
+        private void Start()
+        {
+            if (!isLocalPlayer) return;
+            Frags = 0;
+            Debug.Log("local player");
+            MoveJoystick.OnMove += SetMoveDirection;
+            AttackJoystick.OnAim += TakeAim;
         }
 
         private void FixedUpdate()
         {
-            if (!isLocalPlayer)
-                return;
-
+            if (!isLocalPlayer) return;
             Move();
             Rotate();
 #if KEYBOARD

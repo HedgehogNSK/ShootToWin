@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Mirror;
+
 namespace Shooter.Location
 {
    
-    public class BattleField : MonoBehaviour
+    public class BattleField : NetworkBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField] CellDictionary cellDictionary;
 #pragma warning restore CS0649
         Cell[,] battleCells;
         List<Cell> borderCells;
+
         Transform parentDir;
 
 
@@ -39,10 +42,13 @@ namespace Shooter.Location
             {
                 for(int j=0; j!=y; j++)
                 {
-                    cellDictionary.TryGetValue(CellTools.RandomCellByShare, out Cell value);
+                    CellType randomCell = CellTools.RandomCellByShare;
+                    cellDictionary.TryGetValue(randomCell, out Cell value);
                     if (value != null)
                     {
                         battleCells[i, j] = Instantiate(value, new Vector3 (i, value.transform.position.y, j),Quaternion.identity,parentDir);
+                        NetworkServer.Spawn(battleCells[i, j].gameObject);
+                        
                     }
                 }
             }
@@ -64,9 +70,10 @@ namespace Shooter.Location
                 }
                
             }
+            foreach(var cell in borderCells)
+                NetworkServer.Spawn(cell.gameObject);
         }
-
-        //TODO: ADD SHARES FOR CELLS ON MAP
+        
         void Initialize()
         {
             if (parentDir != null)
@@ -76,9 +83,9 @@ namespace Shooter.Location
             else
                 borderCells.Clear();
 
-            parentDir = new GameObject("Location").transform;
+            parentDir = transform;
         }
-
+        
         public Vector3 GetRandomPositionFree2Walk {
             get
             {

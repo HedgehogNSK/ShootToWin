@@ -307,7 +307,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 919524109}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8aab4c8111b7c411b9b92cf3dbc5bd4e, type: 3}
+  m_Script: {fileID: 11500000, guid: fdfc6b0412f8c394391450440bf0fe27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
@@ -324,7 +324,12 @@ MonoBehaviour:
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 2933272599788761773, guid: a5db8fb8c31607544badd3cf5e19f4ac, type: 3}
+  - {fileID: 4130924286200206011, guid: 6d3399d8ba956314ebaf3e6ed335b00f, type: 3}
+  - {fileID: 6552709994246251411, guid: de2884c18252a49499cee12f735533f2, type: 3}
+  - {fileID: 5474102738148196243, guid: eafbccb1136b3a74e80c5b3268609b73, type: 3}
+  - {fileID: 5419088378460518128, guid: 35055e29783e3fc43b8d0dee9cd123c9, type: 3}
 --- !u!114 &919524113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,13 +458,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 304ac5579e127734e8c117a2ae143bdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.1
   cam: {fileID: 963194227}
   camOffset: {x: 0, y: 3.72, z: -1.95}
-  battleFieldPrefab: {fileID: 8868673063810187324, guid: a5db8fb8c31607544badd3cf5e19f4ac,
-    type: 3}
-  playerPrefab: {fileID: 1197307243580631012, guid: da302d56819ed7d4a85f7ea17ba694e1,
-    type: 3}
 --- !u!4 &1338062833
 Transform:
   m_ObjectHideFlags: 0
