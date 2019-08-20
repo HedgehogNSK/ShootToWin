@@ -15,7 +15,8 @@ namespace Shooter
         [SerializeField] LayerMask affectedLayers;
         [SerializeField] LayerMask shieldLayers;
         [Space]
-        [SerializeField] ParticleSystem particlePrefab;       
+        [SerializeField] ParticleSystem shotParticlePrefab;
+        [SerializeField] ParticleSystem hitParticlePrefab;
         [SerializeField] Transform muzzle;
 #pragma warning restore CS0649
 
@@ -24,6 +25,7 @@ namespace Shooter
         public override float ReloadTime => baseReloadTime;
         public override float AttackDispersion => baseShotSpread;
         public override float Range => baseRange;
+        public override ParticleSystem HitParticles => hitParticlePrefab;
 
         //Step in degrees for Raycasting area in front of weapon
         float deltaAngle = 5;
@@ -39,28 +41,47 @@ namespace Shooter
         {
             if (!IsAvailableToShoot) return;
             IEnumerable<RaycastHit> allhits = GetAllHits(transform.position, direction);
-            allhits = allhits.Except(allhits.Where(hit => hit.transform.GetComponent<IAttacker>().Equals(attacker)));
+            allhits = allhits.Except(allhits.Where(hit => attacker.Equals(hit.transform.GetComponent<IAttacker>())));
             foreach (RaycastHit hit in allhits)
             {
+            
                 IHitable target = hit.collider.gameObject.GetComponent<IHitable>();
                 if (target != null)
                 {
-                    HitArgs hitInfo = HitArgs.CreateBuilder().SetDamage(Damage).SetDirection(direction).SetAttacker(attacker);
+                    HitArgs hitInfo = HitArgs.CreateBuilder().SetDirection(direction).SetAttacker(attacker).SetDamage(this);
                     target.GetStrike(hitInfo);
                 }
-
+                else
+                {
+                    HitAnimation(hit.point);
+                }
             }
-            Animation();
+            ShotAnimation();
             lastShot = Time.time;
         }
-
-        void Animation()
+       
+        void ShotAnimation()
         {
-            particle = Instantiate(particlePrefab, muzzle);
-            particle.transform.localPosition = Vector3.zero;
-            Destroy(particle.gameObject, particle.main.duration);
+            if (shotParticlePrefab != null)
+            {
+                particle = Instantiate(shotParticlePrefab, muzzle);
+                particle.transform.localPosition = Vector3.zero;
+                Destroy(particle.gameObject, particle.main.duration);
+            }
+            
         }
 
+        void HitAnimation(Vector3 target)
+        {
+            if (HitParticles != null)
+            {
+                ParticleSystem particle = Instantiate(HitParticles);
+                particle.transform.position = target;
+                Destroy(particle.gameObject, particle.main.duration);
+            }
+
+        }
+        
         //Get all targets by direction of 1 ray except targets behind the Shield
         private IEnumerable<RaycastHit> GetHitsBeforeWall(Vector3 origin,Vector3 direction)
         {
@@ -70,7 +91,7 @@ namespace Shooter
             RaycastHit blockHit = hits.FirstOrDefault(other => ((1<<other.transform.gameObject.layer) & shieldLayers.value) != 0);
             if (blockHit.collider != null)
             {
-                hits = hits.Where(hit => hit.distance < blockHit.distance);
+                hits = hits.Where(hit => hit.distance <= blockHit.distance);
             }
             return hits;
         }
@@ -125,7 +146,6 @@ namespace Shooter
                 }
             }
         }
-
 
     }
 }

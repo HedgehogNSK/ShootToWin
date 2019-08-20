@@ -68,6 +68,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -121,7 +122,8 @@ MonoBehaviour:
   shieldLayers:
     serializedVersion: 2
     m_Bits: 512
-  particlePrefab: {fileID: 19800014, guid: 5332791ebce075d4a9e56f4581e7fb47, type: 3}
+  shotParticlePrefab: {fileID: 19800014, guid: 5332791ebce075d4a9e56f4581e7fb47, type: 3}
+  hitParticlePrefab: {fileID: 19800002, guid: 99c73c92ac40473459640b165473206f, type: 3}
   muzzle: {fileID: 8352471757867883902}
 --- !u!1 &6288085749665833520
 GameObject:

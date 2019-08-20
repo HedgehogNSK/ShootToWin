@@ -7,7 +7,7 @@ namespace Shooter
     public class HitArgs : System.EventArgs
     {
       
-        public int Damage { get; set; }
+        public Weapon _Weapon { get; set; }
         public Vector3 Direction { get; set; }
         public float Distance { get; set; }
         public IAttacker Attacker { get; set; }

@@ -24,7 +24,7 @@ namespace Shooter
         Vector3 movementDirection;
 
 
-        [SyncVar]int frags =10;
+        [SyncVar] int frags = 10;
         public int Frags
         {
             get { return frags; }
@@ -33,16 +33,16 @@ namespace Shooter
                 if (value >= 0)
                 {
                     frags = value;
-                    CounterLogger.OnUpdate?.Invoke(CounterType.Points, frags) ;
-                    
-            }
+                    CounterLogger.OnUpdate?.Invoke(CounterType.Points, frags);
+
+                }
                 else
                     Debug.LogError("Amount of frags can't be negative");
-                
+
             }
         }
 
-       public override int Health
+        public override int Health
         {
             get => base.Health;
             protected set
@@ -80,25 +80,25 @@ namespace Shooter
         {
             if (isLocalPlayer)
             {
-                Initialize(); 
+                Initialize();
             }
         }
 
         private void FixedUpdate()
         {
             if (!isLocalPlayer) return;
-            if(Input.GetKeyUp(KeyCode.Minus))
-            {               
-                Health -= 20;
-            }
+
             Move();
             Rotate();
 #if KEYBOARD
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 Attack();
+            if(Input.GetKeyUp(KeyCode.Minus))                          
+                Health -= 20;
+            
 #endif 
         }
-       
+
         private void Move()
         {
 
@@ -131,45 +131,46 @@ namespace Shooter
         }
         public void SetMoveDirection(Joystick joystick, Vector2 direction)
         {
-            movementDirection = new Vector3(direction.x,0,direction.y).normalized;
+            movementDirection = new Vector3(direction.x, 0, direction.y).normalized;
         }
 
-        public void TakeAim(Joystick joystick,Vector2 forward,bool fire)
+        public void TakeAim(Joystick joystick, Vector2 forward, bool fire)
         {
-            
+
             if (fire) Attack();
             else
                 SetRotation(forward);
         }
-        void SetRotation( Vector2 forward)
+        void SetRotation(Vector2 forward)
         {
-            
-            rigid.MoveRotation(Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y),Vector3.up));
+            rigid.MoveRotation(Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y), Vector3.up));
         }
 
-        
+
         void Attack()
         {
 
-            if (weapon==null) return;            
+            if (weapon == null) return;
             weapon.Attack(this, transform.forward);
         }
 
         public void GetStrike(HitArgs hit)
         {
             int healthBefore = Health;
-            Health -= hit.Damage;      
-            if (healthBefore>0 && Health <= 0 && hit.Attacker != null)
+            Health -= hit._Weapon.Damage;
+            if (healthBefore > 0 && Health <= 0 && hit.Attacker != null)
             {
                 hit.Attacker.AddKill(this);
             }
-                
+            else
+            {
+                HitAnimation(hit);
+            }
+
+
         }
 
-        public void OnDestroy()
-        {
-            ConnectControllers(false);
-        }
+
         protected override void Die()
         {
             ConnectControllers(false);
@@ -178,10 +179,7 @@ namespace Shooter
             DieAnimation();
 
         }
-        void DieAnimation()
-        {
-            gameObject.SetActive(false);
-        }
+
         public void AddKill(IHitable target)
         {
             Frags++;
@@ -200,8 +198,25 @@ namespace Shooter
                 AttackJoystick.OnAim -= TakeAim;
             }
         }
-               
-        
+
+        private void HitAnimation(HitArgs hit)
+        {
+            if (hit._Weapon.HitParticles != null)
+            {
+                ParticleSystem particle = Instantiate(hit._Weapon.HitParticles);
+                particle.transform.localPosition = transform.position- hit.Direction*0.1f;
+                Destroy(particle.gameObject, particle.main.duration);
+            }
+        }
+        void DieAnimation()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void OnDestroy()
+        {
+            ConnectControllers(false);
+        }
     }
 }
 

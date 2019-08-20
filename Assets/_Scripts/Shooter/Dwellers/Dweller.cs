@@ -8,11 +8,11 @@ namespace Shooter
     public abstract class Dweller : NetworkBehaviour
     {
 #pragma warning disable CS0649
-        [SerializeField][SyncVar]protected int baseHealth;
-        [SerializeField][SyncVar] protected float baseSpeed;
+        [SerializeField]protected int baseHealth;
+        [SerializeField]protected float baseSpeed;
 #pragma warning restore CS0649
-        int health;
-        float speed;
+        [SyncVar] int health;
+        [SyncVar]float speed;
         public virtual int Health
         {
             get => health;

@@ -14,9 +14,14 @@ namespace Shooter
 
         }
 
-        public HitArgsBuilder SetDamage(int damage)
+        public HitArgsBuilder SetDamage(Weapon weapon)
         {
-            hit.Damage = damage > 0 ? damage:0 ;
+            if (weapon == null)
+            {
+                Debug.LogError("Weapon equals null");                
+            }
+            else
+            hit._Weapon =weapon;
             return this;
         }
 

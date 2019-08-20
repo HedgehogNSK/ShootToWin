@@ -10,6 +10,7 @@ namespace Shooter
         public abstract int Damage { get; }        
         public abstract float AttackDispersion { get; }
         public abstract float Range { get; }
+        public abstract ParticleSystem HitParticles { get; }
         public abstract void Attack(IAttacker attacker,Vector3 direction);
     }
 }

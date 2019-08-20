@@ -7,7 +7,7 @@ namespace Shooter {
     {
         public void GetStrike(HitArgs hit)
         {
-            Debug.Log("[GameObject]:" +gameObject.name+" got " + hit.Damage + " damage");            
+            Debug.Log("[GameObject]:" +gameObject.name+" got " + hit._Weapon.Damage + " damage");            
         }
 
         public override void Initialize()
