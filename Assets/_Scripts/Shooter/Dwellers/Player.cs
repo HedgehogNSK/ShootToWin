@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Controllers.Mobile;
 using Hedge.UI;
+using Hedge.Tools;
 using Mirror;
 
 namespace Shooter
@@ -22,7 +23,7 @@ namespace Shooter
         Rigidbody rigid;
         new Collider collider;
         Vector3 movementDirection;
-
+        Quaternion movementRotation;
 
         [SyncVar] int frags = 10;
         public int Frags
@@ -74,6 +75,7 @@ namespace Shooter
             Speed = baseSpeed;
             Health = baseHealth;
             Frags = 0;
+            movementRotation = Quaternion.identity;
             ConnectControllers(true);
         }
         void Start()
@@ -116,18 +118,22 @@ namespace Shooter
 
         }
 
+#if MOUSE
+        LayerMask layerMask;
+#endif
         private void Rotate()
         {
 
-#if KEYBOARD
+#if MOUSE
             Camera cam = Camera.main;            
 
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             if(Physics.Raycast(ray,out RaycastHit raycastHit,20,layerMask,QueryTriggerInteraction.Ignore))
             {
-                transform.LookAt(raycastHit.point.XZ()+transform.position.Y(), Vector3.up);
+                movementRotation = Quaternion.LookRotation(raycastHit.point.XZ() + transform.position.Y(), Vector3.up);
             }
 #endif
+            rigid.MoveRotation(movementRotation);  
         }
         public void SetMoveDirection(Joystick joystick, Vector2 direction)
         {
@@ -143,7 +149,8 @@ namespace Shooter
         }
         void SetRotation(Vector2 forward)
         {
-            rigid.MoveRotation(Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y), Vector3.up));
+            movementRotation = Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y), Vector3.up);
+           
         }
 
 
