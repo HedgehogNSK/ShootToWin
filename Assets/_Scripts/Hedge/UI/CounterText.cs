@@ -9,27 +9,16 @@ namespace Hedge
 {
     namespace UI
     {
-        public enum TextType
-        {
-            Points
-        }
-
+       
 
         [RequireComponent(typeof(Text))]
-        public class CounterText : MonoBehaviour
+        public class CounterText : CounterLogger
         {
-            Text counterTXT;
-            public TextType txtType;
-            static public Action<TextType, object> Update;
-
-            private void Awake()
-            {
-
-            }
+            Text counterTXT;           
 
             public CounterText()
             {
-                Update += TextCatcher;
+                OnUpdate += TextCatcher;
             }
 
 
@@ -48,9 +37,9 @@ namespace Hedge
                 counterTXT.text = number.ToShortNumber();
             }
 
-            void TextCatcher(TextType txtType, object obj)
+            void TextCatcher(CounterType txtType, object obj)
             {
-                if (!this || this.txtType != txtType) return;
+                if (!this || this.cntrType != txtType) return;
                 //This check must be here, cause gameobject can be unactive, but it must get information already
                 if (!counterTXT) counterTXT = GetComponent<Text>();
                 if (counterTXT)
@@ -73,7 +62,7 @@ namespace Hedge
 
             private void OnDestroy()
             {
-                Update -= TextCatcher;
+                OnUpdate -= TextCatcher;
             }
         }
     }

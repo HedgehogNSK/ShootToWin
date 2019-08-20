@@ -51,7 +51,6 @@ namespace Shooter
 
             }
             Animation();
-            Debug.Log("Bang Bang");
             lastShot = Time.time;
         }
 

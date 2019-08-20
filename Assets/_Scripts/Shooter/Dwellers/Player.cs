@@ -24,7 +24,7 @@ namespace Shooter
         Vector3 movementDirection;
 
 
-        [SyncVar]int frags;
+        [SyncVar]int frags =10;
         public int Frags
         {
             get { return frags; }
@@ -33,7 +33,7 @@ namespace Shooter
                 if (value >= 0)
                 {
                     frags = value;
-                    CounterText.Update?.Invoke(TextType.Points, frags) ;
+                    CounterLogger.OnUpdate?.Invoke(CounterType.Points, frags) ;
                     
             }
                 else
@@ -42,32 +42,55 @@ namespace Shooter
             }
         }
 
-        public event Action<IHitable> OnDead;
+       public override int Health
+        {
+            get => base.Health;
+            protected set
+            {
+                base.Health = value;
+                if (isLocalPlayer)
+                {
+                    Debug.Log(gameObject.name + "[" + gameObject.GetInstanceID() + "] :Downgrade HP");
+                    CounterLogger.OnUpdate?.Invoke(CounterType.Health, Health);
+                }
+            }
+        }
 
-        private void Awake()
+        public event Action<Player> OnDead;
+
+        void Awake()
         {
             rigid = GetComponent<Rigidbody>();
             weapon = GetComponentInChildren<Gun>();
             collider = GetComponent<Collider>();
 
             weapon = Instantiate(weaponPrefab, hand);
-               
-           
-           
+
+
         }
 
-        private void Start()
+        public override void Initialize()
         {
-            if (!isLocalPlayer) return;
+            Speed = baseSpeed;
+            Health = baseHealth;
             Frags = 0;
-            Debug.Log("local player");
-            MoveJoystick.OnMove += SetMoveDirection;
-            AttackJoystick.OnAim += TakeAim;
+            ConnectControllers(true);
+        }
+        void Start()
+        {
+            if (isLocalPlayer)
+            {
+                Initialize(); 
+            }
         }
 
         private void FixedUpdate()
         {
             if (!isLocalPlayer) return;
+            if(Input.GetKeyUp(KeyCode.Minus))
+            {               
+                Health -= 20;
+            }
             Move();
             Rotate();
 #if KEYBOARD
@@ -86,12 +109,13 @@ namespace Shooter
             if (Input.GetKey(KeyCode.LeftArrow)) movementDirection += Vector3.left;
             if (Input.GetKey(KeyCode.RightArrow)) movementDirection += Vector3.right;
 
+             
 #endif
 
             rigid.MovePosition(Speed * movementDirection.normalized * Time.fixedDeltaTime + rigid.position);
 
         }
-        
+
         private void Rotate()
         {
 
@@ -123,6 +147,7 @@ namespace Shooter
             rigid.MoveRotation(Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y),Vector3.up));
         }
 
+        
         void Attack()
         {
 
@@ -133,7 +158,7 @@ namespace Shooter
         public void GetStrike(HitArgs hit)
         {
             int healthBefore = Health;
-            Health -= hit.Damage;
+            Health -= hit.Damage;      
             if (healthBefore>0 && Health <= 0 && hit.Attacker != null)
             {
                 hit.Attacker.AddKill(this);
@@ -143,23 +168,40 @@ namespace Shooter
 
         public void OnDestroy()
         {
-            MoveJoystick.OnMove -= SetMoveDirection;
-            AttackJoystick.OnAim -= TakeAim;
+            ConnectControllers(false);
         }
         protected override void Die()
-        {           
+        {
+            ConnectControllers(false);
+
             OnDead?.Invoke(this);
             DieAnimation();
 
         }
         void DieAnimation()
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
         public void AddKill(IHitable target)
         {
             Frags++;
         }
+
+        void ConnectControllers(bool connect)
+        {
+            if (connect)
+            {
+                MoveJoystick.OnMove += SetMoveDirection;
+                AttackJoystick.OnAim += TakeAim;
+            }
+            else
+            {
+                MoveJoystick.OnMove -= SetMoveDirection;
+                AttackJoystick.OnAim -= TakeAim;
+            }
+        }
+               
+        
     }
 }
 

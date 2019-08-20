@@ -82,7 +82,7 @@ namespace Shooter.Location
                 borderCells = new List<Cell>();
             else
                 borderCells.Clear();
-
+            NetworkServer.Spawn(gameObject);
             parentDir = transform;
         }
         

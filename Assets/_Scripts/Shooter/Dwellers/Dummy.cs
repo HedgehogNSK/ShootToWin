@@ -10,6 +10,12 @@ namespace Shooter {
             Debug.Log("[GameObject]:" +gameObject.name+" got " + hit.Damage + " damage");            
         }
 
+        public override void Initialize()
+        {
+            Health = baseHealth;
+            Speed = baseSpeed;
+        }
+
         protected override void Die()
         {
             Destroy(gameObject);

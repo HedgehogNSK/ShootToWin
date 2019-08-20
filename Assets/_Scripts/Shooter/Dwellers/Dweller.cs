@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-
+using Hedge.UI;
 namespace Shooter
 {
     public abstract class Dweller : NetworkBehaviour
     {
 #pragma warning disable CS0649
-        [SerializeField] int health;
-        [SerializeField] float speed;
+        [SerializeField][SyncVar]protected int baseHealth;
+        [SerializeField][SyncVar] protected float baseSpeed;
 #pragma warning restore CS0649
-        public int Health { get => health;
+        int health;
+        float speed;
+        public virtual int Health
+        {
+            get => health;
+
             protected set
             {
                 if (value <= 0)
@@ -21,16 +26,25 @@ namespace Shooter
                 }
                 else
                 {
-                    health = value;
+                    health = value;              
                 }
-            } }
+            }
+        }
 
-        public float Speed => speed;
+        public virtual float Speed
+        {
+            get => speed;
+            protected set
+            {
+                speed = value;
+            }
+        }
 
         public void SetPosition(Vector3 newPosition)
         {
             transform.position = newPosition;
         }
+        public abstract void Initialize();
 
         protected abstract void Die();
     }

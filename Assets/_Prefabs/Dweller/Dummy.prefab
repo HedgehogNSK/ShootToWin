@@ -68,6 +68,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -121,5 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e369bee7c878bd44ab225458a5bb10f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000000
-  speed: 0
+  syncInterval: 0.1
+  baseHealth: 55
+  baseSpeed: 2
