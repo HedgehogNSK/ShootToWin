@@ -146,7 +146,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 1462946838
+  m_SceneId: 0
 --- !u!114 &-2343643170542650978
 MonoBehaviour:
   m_ObjectHideFlags: 0

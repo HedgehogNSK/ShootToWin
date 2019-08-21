@@ -18,6 +18,7 @@ namespace Shooter
         [SerializeField] ParticleSystem shotParticlePrefab;
         [SerializeField] ParticleSystem hitParticlePrefab;
         [SerializeField] Transform muzzle;
+        [SerializeField] AudioClip shotSound;
 #pragma warning restore CS0649
 
         ParticleSystem particle;
@@ -57,6 +58,7 @@ namespace Shooter
                 }
             }
             ShotAnimation();
+            ShotSound();
             lastShot = Time.time;
         }
        
@@ -69,6 +71,12 @@ namespace Shooter
                 Destroy(particle.gameObject, particle.main.duration);
             }
             
+        }
+
+        void ShotSound()
+        {
+            if (shotSound != null)
+                AudioSource.PlayClipAtPoint(shotSound,transform.position);
         }
 
         void HitAnimation(Vector3 target)

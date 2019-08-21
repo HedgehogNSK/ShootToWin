@@ -6,29 +6,21 @@ using System.Linq;
 
 namespace Shooter
 {
-    public class GameManager : MonoBehaviour
+    public class PlayerFollower : MonoBehaviour
     {
 #pragma warning disable CS0649
-        [SerializeField] Camera cam;
         [SerializeField] Vector3 camOffset;
 #pragma warning restore CS0649
-
+        Camera cam;
         Player myPlayer;
-        // Start is called before the first frame update
+        public Player ObservablePlayer => myPlayer;
         void Start()
         {
             cam = Camera.main;            
         }
-
-        // Update is called once per frame
         void Update()
         {
             MoveCamera();
-        }
-
-        private void UnloadGame()
-        {
-            Destroy(myPlayer);
         }
 
         void MoveCamera()
@@ -40,5 +32,7 @@ namespace Shooter
                 myPlayer = FindObjectsOfType<Player>().SingleOrDefault(pl => pl.isLocalPlayer);
             }
         }
+
+
     }
 }
