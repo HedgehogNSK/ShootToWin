@@ -74,15 +74,14 @@ namespace Shooter.Location
                 NetworkServer.Spawn(cell.gameObject);
         }
         
-        void Initialize()
+        public void Initialize()
         {
             if (parentDir != null)
                 Destroy(parentDir.gameObject);
             if (borderCells == null)
                 borderCells = new List<Cell>();
             else
-                borderCells.Clear();
-            NetworkServer.Spawn(gameObject);
+                borderCells.Clear();           
             parentDir = transform;
         }
         

@@ -24,7 +24,7 @@ namespace Mirror
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    public class ClientRpcAttribute : Attribute
+    public class ClientRpcAttributeAttribute : Attribute
     {
         public int channel = Channels.DefaultReliable; // this is zero
     }

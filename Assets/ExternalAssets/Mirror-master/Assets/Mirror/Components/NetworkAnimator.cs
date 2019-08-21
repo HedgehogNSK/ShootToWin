@@ -404,20 +404,20 @@ namespace Mirror
         #endregion
 
         #region client message handlers
-        [ClientRpc]
+        [ClientRpcAttribute]
         void RpcOnAnimationClientMessage(int stateHash, float normalizedTime, int layerId, byte[] parameters)
         {
             HandleAnimMsg(stateHash, normalizedTime, layerId, new NetworkReader(parameters));
         }
 
-        [ClientRpc]
+        [ClientRpcAttribute]
         void RpcOnAnimationParametersClientMessage(byte[] parameters)
         {
             HandleAnimParamsMsg(new NetworkReader(parameters));
         }
 
         // server sends this to one client
-        [ClientRpc]
+        [ClientRpcAttribute]
         void RpcOnAnimationTriggerClientMessage(int hash)
         {
             HandleAnimTriggerMsg(hash);

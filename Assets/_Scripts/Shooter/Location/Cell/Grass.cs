@@ -18,14 +18,7 @@ namespace Shooter.Location
             {
                 colliders.Add(other);
             }
-
-            if (colliders.Count > 0)
-            {
-                string s = "Colliders: ";
-                foreach (var collider in colliders) s += name + ";";
-                Debug.Log(s);
-            }
-           
+          
         }
 
 

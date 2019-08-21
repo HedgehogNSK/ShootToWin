@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Hedge.Tools;
+using Mirror;
+
 namespace Shooter
 {
     public class Gun : Weapon
@@ -54,37 +56,43 @@ namespace Shooter
                 }
                 else
                 {
-                    HitAnimation(hit.point);
+                    CmdHitAnimation(hit.point);
                 }
             }
-            ShotAnimation();
-            ShotSound();
+            CmdShotAnimation();
+            RpcShotSound();
             lastShot = Time.time;
         }
        
-        void ShotAnimation()
+        [Command]
+        void CmdShotAnimation()
         {
             if (shotParticlePrefab != null)
             {
                 particle = Instantiate(shotParticlePrefab, muzzle);
                 particle.transform.localPosition = Vector3.zero;
+                NetworkServer.Spawn(particle.gameObject);
                 Destroy(particle.gameObject, particle.main.duration);
             }
             
         }
 
-        void ShotSound()
+        [ClientRpcAttribute]
+        void RpcShotSound()
         {
             if (shotSound != null)
                 AudioSource.PlayClipAtPoint(shotSound,transform.position);
         }
 
-        void HitAnimation(Vector3 target)
+        [Command]
+        void CmdHitAnimation(Vector3 target)
         {
             if (HitParticles != null)
             {
                 ParticleSystem particle = Instantiate(HitParticles);
                 particle.transform.position = target;
+                NetworkServer.Spawn(particle.gameObject);
+
                 Destroy(particle.gameObject, particle.main.duration);
             }
 

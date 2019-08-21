@@ -18,7 +18,7 @@ namespace Shooter
         {
             cam = Camera.main;            
         }
-        void Update()
+        void LateUpdate()
         {
             MoveCamera();
         }

@@ -6,6 +6,7 @@ using Controllers.Mobile;
 using Hedge.UI;
 using Hedge.Tools;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 namespace Shooter
 {
@@ -51,7 +52,6 @@ namespace Shooter
                 base.Health = value;
                 if (isLocalPlayer)
                 {
-                    Debug.Log(gameObject.name + "[" + gameObject.GetInstanceID() + "] :Downgrade HP");
                     CounterLogger.OnUpdate?.Invoke(CounterType.Health, Health);
                 }
             }
@@ -64,28 +64,29 @@ namespace Shooter
             rigid = GetComponent<Rigidbody>();
             weapon = GetComponentInChildren<Gun>();
             collider = GetComponent<Collider>();
-
             weapon = Instantiate(weaponPrefab, hand);
-
-
         }
 
         public override void Initialize()
         {
             Speed = baseSpeed;
-            Health = baseHealth;
-            Frags = 0;
-            movementRotation = Quaternion.identity;
-            ConnectControllers(true);
-        }
-        void Start()
-        {
-            if (isLocalPlayer)
-            {
-                Initialize();
-            }
+            Health = baseHealth;           
+            movementRotation = transform.rotation;
         }
 
+     
+        public void SetWeapon()
+        {
+            
+            NetworkServer.Spawn(weapon.gameObject);
+        }
+        
+        private void Start()
+        {
+            Initialize();           
+            ConnectControllers(true);
+            Frags = 0;
+        }
         private void FixedUpdate()
         {
             if (!isLocalPlayer) return;
@@ -143,7 +144,7 @@ namespace Shooter
         public void TakeAim(Joystick joystick, Vector2 forward, bool fire)
         {
 
-            if (fire) Attack();
+            if (fire) RpcAttack();
             else
                 SetRotation(forward);
         }
@@ -153,10 +154,9 @@ namespace Shooter
            
         }
 
-
-        void Attack()
+        [ClientRpcAttribute]
+        void RpcAttack()
         {
-
             if (weapon == null) return;
             weapon.Attack(this, transform.forward);
         }
@@ -171,7 +171,7 @@ namespace Shooter
             }
             else
             {
-                HitAnimation(hit);
+                CmdHitAnimation(hit);
             }
 
 
@@ -194,24 +194,30 @@ namespace Shooter
 
         void ConnectControllers(bool connect)
         {
+            if (!isLocalPlayer) return;
             if (connect)
             {
+                SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
                 MoveJoystick.OnMove += SetMoveDirection;
                 AttackJoystick.OnAim += TakeAim;
+
             }
             else
             {
+                SceneManager.UnloadSceneAsync(1);
                 MoveJoystick.OnMove -= SetMoveDirection;
                 AttackJoystick.OnAim -= TakeAim;
             }
         }
 
-        private void HitAnimation(HitArgs hit)
+        [Command]
+        private void CmdHitAnimation(HitArgs hit)
         {
             if (hit._Weapon.HitParticles != null)
             {
                 ParticleSystem particle = Instantiate(hit._Weapon.HitParticles);
                 particle.transform.localPosition = transform.position- hit.Direction*0.1f;
+                NetworkServer.Spawn(particle.gameObject);
                 Destroy(particle.gameObject, particle.main.duration);
             }
         }
@@ -220,8 +226,8 @@ namespace Shooter
             gameObject.SetActive(false);
         }
 
-        public void OnDestroy()
-        {
+        public void OnDisable()
+        {            
             ConnectControllers(false);
         }
     }

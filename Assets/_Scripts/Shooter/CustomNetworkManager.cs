@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using System.Linq;
-using System;
 
 namespace Shooter
 {
@@ -14,9 +12,9 @@ namespace Shooter
 
         private void LoadBattleField()
         {
-            battleField = Instantiate(spawnPrefabs[0]).GetComponent<Location.BattleField>();            
-            battleField.Generate(20, 20);
-
+            battleField = Instantiate(spawnPrefabs[0]).GetComponent<Location.BattleField>();
+            NetworkServer.Spawn(battleField.gameObject);
+            battleField.Generate(5, 5);
         }        
 
         private bool IsBattleFieldLoaded => battleField != null;
@@ -28,11 +26,16 @@ namespace Shooter
         public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)
         {
             
-            GameObject player = Instantiate(playerPrefab, battleField.GetRandomPositionFree2Walk, playerPrefab.transform.rotation);
-            NetworkServer.AddPlayerForConnection(conn, player);
-
-            player.GetComponent<Player>().OnDead += RespawnPlayer;
+            GameObject playerObject = Instantiate(playerPrefab, battleField.GetRandomPositionFree2Walk, playerPrefab.transform.rotation);
+            if (NetworkServer.AddPlayerForConnection(conn, playerObject))
+            {
+                Player player = playerObject.GetComponent<Player>();
+                player.OnDead += RespawnPlayer;
+                player.SetWeapon();
+                
+            }
         }
+
 
         private void RespawnPlayer(Player player)
         {
