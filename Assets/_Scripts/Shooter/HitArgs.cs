@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Shooter
 {
+    [System.Serializable]
     public class HitArgs : System.EventArgs
     {
       

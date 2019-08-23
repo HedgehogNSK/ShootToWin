@@ -10,9 +10,11 @@ namespace Hedge.UI
     public class CounterRectTransform : CounterLogger
     {
         RectTransform mask;
+#pragma warning disable CS0649
         [SerializeField] int minX;
         [SerializeField] int maxX;
         [SerializeField] float maxParameter;
+#pragma warning restore CS0649
         public CounterRectTransform()
         {
             OnUpdate += ParameterCatcher;

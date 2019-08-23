@@ -4,27 +4,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using Controllers.Mobile;
 using Hedge.UI;
-using Hedge.Tools;
 using Mirror;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 namespace Shooter
 {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody), typeof(NetworkIdentity))]
     sealed public class Player : Dweller, IHitable, IAttacker
     {
 #pragma warning disable CS0649
 
-        [SerializeField] Transform hand;
+        public Transform hand;
         [SerializeField] Weapon weaponPrefab;
 #pragma warning restore CS0649
 
-        Weapon weapon;
+        public Weapon weapon { get; private set; }
 
         Rigidbody rigid;
         new Collider collider;
-        Vector3 movementDirection;
-        Quaternion movementRotation;
+        Vector3 movementDirection = Vector3.zero;
+        Quaternion lookRotation = Quaternion.identity;
 
         [SyncVar] int frags = 10;
         public int Frags
@@ -64,33 +64,64 @@ namespace Shooter
             rigid = GetComponent<Rigidbody>();
             weapon = GetComponentInChildren<Gun>();
             collider = GetComponent<Collider>();
-            weapon = Instantiate(weaponPrefab, hand);
+            
+        }
+
+        [Command]
+        public void CmdOnStartInitialize()
+        {
+            Initialize();
+            Frags = 0;
         }
 
         public override void Initialize()
         {
             Speed = baseSpeed;
-            Health = baseHealth;           
-            movementRotation = transform.rotation;
+            Health = baseHealth;
+            lookRotation = transform.rotation;
+            movementDirection = Vector3.zero;
+            
         }
 
-     
-        public void SetWeapon()
+        [ClientRpc]
+        public void RpcGetWeapon(NetworkIdentity weaponIdentity)
         {
             
-            NetworkServer.Spawn(weapon.gameObject);
+            Debug.Log(weaponIdentity.name + " " + hand);
+            Weapon weaponToUpdate = weaponIdentity.GetComponent<Weapon>();
+            Debug.Log("[GameObject]" + gameObject.name + transform.position + " " + isLocalPlayer + " :" + weaponToUpdate);
+            weaponToUpdate.transform.SetParent(hand);
+            weaponToUpdate.transform.localPosition = weaponPrefab.transform.position;
+            weaponToUpdate.transform.localRotation = weaponPrefab.transform.rotation;
+            weaponToUpdate.transform.localScale = weaponPrefab.transform.lossyScale;
+            weapon = weaponToUpdate;
         }
-        
+
+       
+        public void SetWeapon()
+        {
+            if (!weapon)
+            {
+                weapon = Instantiate(weaponPrefab, hand);
+                NetworkServer.Spawn(weapon.gameObject);
+            }
+           
+            RpcGetWeapon(weapon.netIdentity);
+
+        }
+
         private void Start()
         {
-            Initialize();           
+            if (isLocalPlayer)
+            {
+                Initialize();
+                Frags = 0;
+            }
             ConnectControllers(true);
-            Frags = 0;
         }
+
         private void FixedUpdate()
         {
-            if (!isLocalPlayer) return;
-
             Move();
             Rotate();
 #if KEYBOARD
@@ -106,6 +137,7 @@ namespace Shooter
         {
 
 #if KEYBOARD
+              if (!isLocalPlayer) return;
             movementDirection = Vector3.zero;
             if (Input.GetKey(KeyCode.UpArrow)) movementDirection += Vector3.forward;
             if (Input.GetKey(KeyCode.DownArrow)) movementDirection += Vector3.back;
@@ -126,6 +158,7 @@ namespace Shooter
         {
 
 #if MOUSE
+              if (!isLocalPlayer) return;
             Camera cam = Camera.main;            
 
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -134,7 +167,7 @@ namespace Shooter
                 movementRotation = Quaternion.LookRotation(raycastHit.point.XZ() + transform.position.Y(), Vector3.up);
             }
 #endif
-            rigid.MoveRotation(movementRotation);  
+            rigid.MoveRotation(lookRotation);
         }
         public void SetMoveDirection(Joystick joystick, Vector2 direction)
         {
@@ -144,18 +177,18 @@ namespace Shooter
         public void TakeAim(Joystick joystick, Vector2 forward, bool fire)
         {
 
-            if (fire) RpcAttack();
+            if (fire) CmdAttack();
             else
                 SetRotation(forward);
         }
         void SetRotation(Vector2 forward)
         {
-            movementRotation = Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y), Vector3.up);
-           
+            lookRotation = Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y), Vector3.up);
+
         }
 
-        [ClientRpcAttribute]
-        void RpcAttack()
+        [Command]
+        void CmdAttack()
         {
             if (weapon == null) return;
             weapon.Attack(this, transform.forward);
@@ -181,9 +214,9 @@ namespace Shooter
         protected override void Die()
         {
             ConnectControllers(false);
-
-            OnDead?.Invoke(this);
             DieAnimation();
+            OnDead?.Invoke(this);
+            
 
         }
 
@@ -216,7 +249,7 @@ namespace Shooter
             if (hit._Weapon.HitParticles != null)
             {
                 ParticleSystem particle = Instantiate(hit._Weapon.HitParticles);
-                particle.transform.localPosition = transform.position- hit.Direction*0.1f;
+                particle.transform.localPosition = transform.position - hit.Direction * 0.1f;
                 NetworkServer.Spawn(particle.gameObject);
                 Destroy(particle.gameObject, particle.main.duration);
             }
@@ -227,7 +260,7 @@ namespace Shooter
         }
 
         public void OnDisable()
-        {            
+        {
             ConnectControllers(false);
         }
     }

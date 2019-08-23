@@ -32,10 +32,10 @@ namespace Shooter
                 Player player = playerObject.GetComponent<Player>();
                 player.OnDead += RespawnPlayer;
                 player.SetWeapon();
-                
             }
         }
 
+        
 
         private void RespawnPlayer(Player player)
         {
@@ -50,6 +50,7 @@ namespace Shooter
             player.SetPosition(battleField.GetRandomPositionFree2Walk);
             player.Initialize();
         }
+
     }
 
 }

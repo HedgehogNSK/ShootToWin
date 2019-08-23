@@ -39,6 +39,7 @@ namespace Shooter
             if ((affectedLayers | shieldLayers) != affectedLayers) Debug.LogError("Shield Layers must be add in affected layers at first");
 #endif
             lastShot = -ReloadTime;
+            
         }
         public override void Attack(IAttacker attacker,Vector3 direction)
         {
@@ -56,44 +57,54 @@ namespace Shooter
                 }
                 else
                 {
-                    CmdHitAnimation(hit.point);
+                    HitAnimation(hit.point);
                 }
             }
-            CmdShotAnimation();
+            ShotAnimation();
             RpcShotSound();
             lastShot = Time.time;
         }
        
-        [Command]
-        void CmdShotAnimation()
+       
+        void ShotAnimation()
         {
             if (shotParticlePrefab != null)
-            {
+            {            
                 particle = Instantiate(shotParticlePrefab, muzzle);
                 particle.transform.localPosition = Vector3.zero;
                 NetworkServer.Spawn(particle.gameObject);
                 Destroy(particle.gameObject, particle.main.duration);
+                RpcChangeParent(particle.GetComponent<NetworkIdentity>());
             }
             
         }
 
-        [ClientRpcAttribute]
+        [ClientRpc]
+        public void RpcChangeParent(NetworkIdentity @object)
+        {
+            @object.transform.SetParent(muzzle);
+            @object.transform.localPosition = Vector3.zero;
+            //@object.transform.localRotation = weaponPrefab.transform.rotation;
+            @object.transform.localScale = Vector3.one;
+
+
+        }
+        [ClientRpc]
         void RpcShotSound()
         {
             if (shotSound != null)
                 AudioSource.PlayClipAtPoint(shotSound,transform.position);
         }
-
-        [Command]
-        void CmdHitAnimation(Vector3 target)
+       
+        void HitAnimation(Vector3 target)
         {
             if (HitParticles != null)
             {
                 ParticleSystem particle = Instantiate(HitParticles);
                 particle.transform.position = target;
                 NetworkServer.Spawn(particle.gameObject);
-
                 Destroy(particle.gameObject, particle.main.duration);
+                
             }
 
         }
