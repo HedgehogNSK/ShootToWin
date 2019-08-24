@@ -41,6 +41,7 @@ namespace Shooter
             lastShot = -ReloadTime;
             
         }
+       
         public override void Attack(IAttacker attacker,Vector3 direction)
         {
             if (!IsAvailableToShoot) return;
@@ -61,7 +62,7 @@ namespace Shooter
                 }
             }
             ShotAnimation();
-            RpcShotSound();
+            ShotSound();
             lastShot = Time.time;
         }
        
@@ -72,25 +73,13 @@ namespace Shooter
             {            
                 particle = Instantiate(shotParticlePrefab, muzzle);
                 particle.transform.localPosition = Vector3.zero;
-                NetworkServer.Spawn(particle.gameObject);
                 Destroy(particle.gameObject, particle.main.duration);
-                RpcChangeParent(particle.GetComponent<NetworkIdentity>());
+                
             }
             
         }
 
-        [ClientRpc]
-        public void RpcChangeParent(NetworkIdentity @object)
-        {
-            @object.transform.SetParent(muzzle);
-            @object.transform.localPosition = Vector3.zero;
-            //@object.transform.localRotation = weaponPrefab.transform.rotation;
-            @object.transform.localScale = Vector3.one;
-
-
-        }
-        [ClientRpc]
-        void RpcShotSound()
+        void ShotSound()
         {
             if (shotSound != null)
                 AudioSource.PlayClipAtPoint(shotSound,transform.position);
@@ -101,8 +90,7 @@ namespace Shooter
             if (HitParticles != null)
             {
                 ParticleSystem particle = Instantiate(HitParticles);
-                particle.transform.position = target;
-                NetworkServer.Spawn(particle.gameObject);
+                particle.transform.position = target;                
                 Destroy(particle.gameObject, particle.main.duration);
                 
             }

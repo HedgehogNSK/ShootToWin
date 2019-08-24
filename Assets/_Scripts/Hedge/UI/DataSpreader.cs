@@ -28,7 +28,7 @@ namespace Hedge.UI
         }
         static void CachedLastHandle(DataType type, object obj)
         {
-            cacheObjDict.Add(type, obj);
+            cacheObjDict[type] = obj;
         }
 
         private void Start()

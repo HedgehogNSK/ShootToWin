@@ -7,9 +7,9 @@ namespace Shooter
 {
     public class CustomNetworkManager : NetworkManager
     {
-        const float RESPAWN_TIME = 3;
+       
         Location.BattleField battleField;
-
+        List<Player> players = new List<Player>();
         private void LoadBattleField()
         {
             battleField = Instantiate(spawnPrefabs[0]).GetComponent<Location.BattleField>();
@@ -25,31 +25,21 @@ namespace Shooter
         }
         public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)
         {
-            
-            GameObject playerObject = Instantiate(playerPrefab, battleField.GetRandomPositionFree2Walk, playerPrefab.transform.rotation);
-            if (NetworkServer.AddPlayerForConnection(conn, playerObject))
+
+            Player player = Instantiate(playerPrefab, battleField.GetRandomPositionFree2Walk, playerPrefab.transform.rotation).GetComponent<Player>();
+            if (NetworkServer.AddPlayerForConnection(conn, player.gameObject))
             {
-                Player player = playerObject.GetComponent<Player>();
-                player.OnDead += RespawnPlayer;
-                player.CmdSetWeapon();
+          
+                player.OnDead += (x) => 
+                {
+                    player.RpcRespawnPlayer(x.netIdentity, battleField.GetRandomPositionFree2Walk);
+                };
+                players.Add(player);
             }
         }
 
         
-
-        private void RespawnPlayer(Player player)
-        {
-            StartCoroutine(RespawnPlayerCoroutine(RESPAWN_TIME, player));            
-
-        }
-
-        IEnumerator RespawnPlayerCoroutine(float time, Player player)
-        {
-            yield return new WaitForSecondsRealtime(time);
-            player.gameObject.SetActive(true);
-            player.SetPosition(battleField.GetRandomPositionFree2Walk);
-            player.Initialize();
-        }
+        
 
     }
 

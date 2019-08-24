@@ -4,7 +4,7 @@ using UnityEngine;
 using Mirror;
 namespace Shooter
 {
-    public abstract class Weapon: NetworkBehaviour
+    public abstract class Weapon: MonoBehaviour
     {
         public abstract float ReloadTime { get; }
         public abstract int Damage { get; }        

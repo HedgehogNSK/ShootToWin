@@ -11,7 +11,7 @@ namespace Shooter
         [SerializeField]protected int baseHealth;
         [SerializeField]protected float baseSpeed;
 #pragma warning restore CS0649
-        [SyncVar] int health;
+        [SyncVar]int health;
         [SyncVar]float speed;
         public virtual int Health
         {

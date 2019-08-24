@@ -50,15 +50,19 @@ namespace Hedge.UI
         
         private void TransformResize(float parameter)
         {
-            if (MaxParamDict[dataType] is float)
+            object maxParameter;
+            if (!MaxParamDict.TryGetValue(dataType, out maxParameter))
+                maxParameter = 0.0f;
+            
+            
+            if (maxParameter is float)
             {
-                if (parameter > ((float)MaxParamDict[dataType]))
+                if (parameter > (float)maxParameter)
                 {
                     MaxParamDict[dataType] = parameter;
                 }
-                float maxParameter = (float)MaxParamDict[dataType];
                 int delta = maxX - minX;
-                float ratio = parameter / maxParameter;
+                float ratio = parameter / (float)maxParameter;
                 float currentX = (ratio > 1 ? 1 : ratio) * delta + minX;
 
                 mask.sizeDelta = new Vector2(currentX, mask.sizeDelta.y);

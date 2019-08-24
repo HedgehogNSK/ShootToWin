@@ -13,6 +13,7 @@ namespace Shooter
     [RequireComponent(typeof(Rigidbody), typeof(NetworkIdentity))]
     sealed public class Player : Dweller, IHitable, IAttacker
     {
+        const float RESPAWN_TIME = 3;
 #pragma warning disable CS0649
 
         public Transform hand;
@@ -64,70 +65,46 @@ namespace Shooter
             rigid = GetComponent<Rigidbody>();
             weapon = GetComponentInChildren<Gun>();
             collider = GetComponent<Collider>();
-            
+            Frags = 0;
         }
 
         [Command]
         public void CmdOnStartInitialize()
         {
+            RpcInitialize();
+
+        }
+
+        [ClientRpc]
+        public void RpcInitialize()
+        {
             Initialize();
-            Frags = 0;
         }
 
         public override void Initialize()
         {
             Speed = baseSpeed;
             Health = baseHealth;
-            TransformDataSpreader.ForceSetMaxParameter(DataType.Health, Health);
             lookRotation = transform.rotation;
             movementDirection = Vector3.zero;
-            
+
         }
 
-        [TargetRpc]
-        public void TargetGetWeapon(NetworkConnection networkConnection,NetworkIdentity weaponIdentity)
-        {
-            
-            Debug.Log(weaponIdentity.name + " " + hand);
-            Weapon weaponToUpdate = weaponIdentity.GetComponent<Weapon>();
-            Debug.Log("[GameObject]" + gameObject.name + transform.position + " " + isLocalPlayer + " :" + weaponToUpdate);
-            weaponToUpdate.transform.SetParent(hand);
-            weaponToUpdate.transform.localPosition = weaponPrefab.transform.position;
-            weaponToUpdate.transform.localRotation = weaponPrefab.transform.rotation;
-            weaponToUpdate.transform.localScale = weaponPrefab.transform.lossyScale;
-            weapon = weaponToUpdate;
-        }
-
-        [Command]
-        public void CmdSetWeapon()
+        private void SetWeapon()
         {
             if (!weapon)
-            {
-                weapon = Instantiate(weaponPrefab, hand);
-                NetworkServer.Spawn(weapon.gameObject);
-            }
-           
-            TargetGetWeapon(connectionToClient,weapon.netIdentity);
-
+            { weapon = Instantiate(weaponPrefab, hand); }
         }
-
         private void Start()
         {
+            SetWeapon();
             ConnectControllers(true);
 
             if (isLocalPlayer)
             {
-                Initialize();
-                Frags = 0;
+                CmdOnStartInitialize();
             }
 
-
-            Debug.Log("[GameObject]+"+name+"("+GetInstanceID()+")Has Autorithy: "+this.hasAuthority);
-            if (hasAuthority)
-            {
-                CmdSetWeapon();
-            }
-            
         }
 
         private void FixedUpdate()
@@ -200,6 +177,12 @@ namespace Shooter
         [Command]
         void CmdAttack()
         {
+            RpcAttack();
+        }
+
+        [ClientRpc]
+        void RpcAttack()
+        {
             if (weapon == null) return;
             weapon.Attack(this, transform.forward);
         }
@@ -214,20 +197,37 @@ namespace Shooter
             }
             else
             {
-                CmdHitAnimation(hit);
+                HitAnimation(hit);
             }
 
 
         }
-       
+
+        [ClientRpc]
+        public void RpcRespawnPlayer(NetworkIdentity Identity, Vector3 position)
+        {
+            Player player = Identity.GetComponent<Player>();
+            if (player)
+                player.SetPosition(position);
+
+            Location.BattleField battleField = FindObjectOfType<Location.BattleField>();
+            if (battleField)
+                battleField.StartCoroutine(RespawnPlayerCoroutine(RESPAWN_TIME, Identity));
+        }
+
+        IEnumerator RespawnPlayerCoroutine(float time, NetworkIdentity identity)
+        {
+            yield return new WaitForSecondsRealtime(time);
+            Start();
+            identity.gameObject.SetActive(true);
+            
+        }
 
         protected override void Die()
         {
             ConnectControllers(false);
             DieAnimation();
             OnDead?.Invoke(this);
-            
-
         }
 
         public void AddKill(IHitable target)
@@ -243,7 +243,7 @@ namespace Shooter
                 SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
                 MoveJoystick.OnMove += SetMoveDirection;
                 AttackJoystick.OnAim += TakeAim;
-                
+
 
             }
             else
@@ -254,15 +254,12 @@ namespace Shooter
             }
         }
 
-
-        [Command]
-        private void CmdHitAnimation(HitArgs hit)
+        private void HitAnimation(HitArgs hit)
         {
             if (hit._Weapon.HitParticles != null)
             {
                 ParticleSystem particle = Instantiate(hit._Weapon.HitParticles);
                 particle.transform.localPosition = transform.position - hit.Direction * 0.1f;
-                NetworkServer.Spawn(particle.gameObject);
                 Destroy(particle.gameObject, particle.main.duration);
             }
         }
