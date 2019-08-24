@@ -35,7 +35,7 @@ namespace Shooter
                 if (value >= 0)
                 {
                     frags = value;
-                    CounterLogger.OnUpdate?.Invoke(CounterType.Points, frags);
+                    DataSpreader.OnUpdate?.Invoke(DataType.Points, frags);
 
                 }
                 else
@@ -52,7 +52,7 @@ namespace Shooter
                 base.Health = value;
                 if (isLocalPlayer)
                 {
-                    CounterLogger.OnUpdate?.Invoke(CounterType.Health, Health);
+                    DataSpreader.OnUpdate?.Invoke(DataType.Health, Health);
                 }
             }
         }
@@ -78,13 +78,14 @@ namespace Shooter
         {
             Speed = baseSpeed;
             Health = baseHealth;
+            TransformDataSpreader.ForceSetMaxParameter(DataType.Health, Health);
             lookRotation = transform.rotation;
             movementDirection = Vector3.zero;
             
         }
 
-        [ClientRpc]
-        public void RpcGetWeapon(NetworkIdentity weaponIdentity)
+        [TargetRpc]
+        public void TargetGetWeapon(NetworkConnection networkConnection,NetworkIdentity weaponIdentity)
         {
             
             Debug.Log(weaponIdentity.name + " " + hand);
@@ -97,8 +98,8 @@ namespace Shooter
             weapon = weaponToUpdate;
         }
 
-       
-        public void SetWeapon()
+        [Command]
+        public void CmdSetWeapon()
         {
             if (!weapon)
             {
@@ -106,18 +107,27 @@ namespace Shooter
                 NetworkServer.Spawn(weapon.gameObject);
             }
            
-            RpcGetWeapon(weapon.netIdentity);
+            TargetGetWeapon(connectionToClient,weapon.netIdentity);
 
         }
 
         private void Start()
         {
+            ConnectControllers(true);
+
             if (isLocalPlayer)
             {
                 Initialize();
                 Frags = 0;
             }
-            ConnectControllers(true);
+
+
+            Debug.Log("[GameObject]+"+name+"("+GetInstanceID()+")Has Autorithy: "+this.hasAuthority);
+            if (hasAuthority)
+            {
+                CmdSetWeapon();
+            }
+            
         }
 
         private void FixedUpdate()
@@ -209,7 +219,7 @@ namespace Shooter
 
 
         }
-
+       
 
         protected override void Die()
         {
@@ -233,6 +243,7 @@ namespace Shooter
                 SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
                 MoveJoystick.OnMove += SetMoveDirection;
                 AttackJoystick.OnAim += TakeAim;
+                
 
             }
             else
@@ -242,6 +253,7 @@ namespace Shooter
                 AttackJoystick.OnAim -= TakeAim;
             }
         }
+
 
         [Command]
         private void CmdHitAnimation(HitArgs hit)

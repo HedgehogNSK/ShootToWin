@@ -7,22 +7,24 @@ using UnityEngine.UI;
 namespace Hedge.UI
 {
     [RequireComponent(typeof(RectTransform))]
-    public class CounterRectTransform : CounterLogger
+    public class TransformDataSpreader : DataSpreader
     {
         RectTransform mask;
 #pragma warning disable CS0649
         [SerializeField] int minX;
         [SerializeField] int maxX;
-        [SerializeField] float maxParameter;
 #pragma warning restore CS0649
-        public CounterRectTransform()
+
+        static protected Dictionary<DataType, object> MaxParamDict = new Dictionary<DataType, object>();      
+
+        static public void ForceSetMaxParameter(DataType type, object obj)
         {
-            OnUpdate += ParameterCatcher;
+            MaxParamDict.Add(type, obj);
         }
 
-        private void ParameterCatcher(CounterType type, object parameter)
+        protected override void ParameterHandler(DataType type, object parameter)
         {
-            if (!this || this.cntrType != type) return;
+            if (!this || dataType != type) return;
             //This check must be here, cause gameobject can be unactive, but it must get information already
             if (!mask) mask = GetComponent<RectTransform>();
             if (mask)
@@ -45,15 +47,22 @@ namespace Hedge.UI
                 }
             }
         }
-
+        
         private void TransformResize(float parameter)
         {
-            int delta = maxX - minX;
-            Debug.Log(parameter);
-            float ratio = parameter / maxParameter;
-            float currentX = (ratio>1? 1:ratio) * delta +minX;
+            if (MaxParamDict[dataType] is float)
+            {
+                if (parameter > ((float)MaxParamDict[dataType]))
+                {
+                    MaxParamDict[dataType] = parameter;
+                }
+                float maxParameter = (float)MaxParamDict[dataType];
+                int delta = maxX - minX;
+                float ratio = parameter / maxParameter;
+                float currentX = (ratio > 1 ? 1 : ratio) * delta + minX;
 
-            mask.sizeDelta = new Vector2(currentX, mask.sizeDelta.y);
+                mask.sizeDelta = new Vector2(currentX, mask.sizeDelta.y);
+            }
         }
 
         private void TransformResize(int parameter)

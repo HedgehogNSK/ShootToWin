@@ -464,7 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d58ccacd2001c90409329c1c1a6dd48c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cntrType: 1
+  dataType: 1
 --- !u!114 &934178705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -754,7 +754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a1b30919ac68bb48882023de3d0635f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cntrType: 1
+  dataType: 1
   minX: 10
   maxX: 245
   maxParameter: 100
@@ -933,7 +933,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d58ccacd2001c90409329c1c1a6dd48c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cntrType: 0
+  dataType: 0
 --- !u!114 &1618361389
 MonoBehaviour:
   m_ObjectHideFlags: 0

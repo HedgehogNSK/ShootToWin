@@ -53,7 +53,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 2439979691
+  m_SceneId: 3290571777
 --- !u!114 &-2343643170542650978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
-  baseHealth: 100
+  baseHealth: 120
   baseSpeed: 5
   hand: {fileID: 1197307244847396130}
   weaponPrefab: {fileID: 4969244667655643085, guid: a9fdf097c03911b4da9c908ed2f40de8,

@@ -31,7 +31,7 @@ namespace Shooter
             {
                 Player player = playerObject.GetComponent<Player>();
                 player.OnDead += RespawnPlayer;
-                player.SetWeapon();
+                player.CmdSetWeapon();
             }
         }
 

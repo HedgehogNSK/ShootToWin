@@ -12,15 +12,9 @@ namespace Hedge
        
 
         [RequireComponent(typeof(Text))]
-        public class CounterText : CounterLogger
+        public class TextDataSpreader : DataSpreader
         {
             Text counterTXT;           
-
-            public CounterText()
-            {
-                OnUpdate += TextCatcher;
-            }
-
 
             void ChangeText(string str)
             {
@@ -37,9 +31,9 @@ namespace Hedge
                 counterTXT.text = number.ToShortNumber();
             }
 
-            void TextCatcher(CounterType txtType, object obj)
+            protected override void ParameterHandler(DataType txtType, object obj)
             {
-                if (!this || this.cntrType != txtType) return;
+                if (!this || this.dataType != txtType) return;
                 //This check must be here, cause gameobject can be unactive, but it must get information already
                 if (!counterTXT) counterTXT = GetComponent<Text>();
                 if (counterTXT)
@@ -62,7 +56,7 @@ namespace Hedge
 
             private void OnDestroy()
             {
-                OnUpdate -= TextCatcher;
+                OnUpdate -= ParameterHandler;
             }
         }
     }
