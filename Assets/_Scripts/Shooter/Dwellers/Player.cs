@@ -7,7 +7,7 @@ using Hedge.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
 using System.Linq;
-
+using Hedge.Tools;
 namespace Shooter
 {
     [RequireComponent(typeof(Rigidbody), typeof(NetworkIdentity))]
@@ -111,12 +111,9 @@ namespace Shooter
         {
             Move();
             Rotate();
-#if KEYBOARD
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-                Attack();
-            if(Input.GetKeyUp(KeyCode.Minus))                          
-                Health -= 20;
-            
+#if MOUSE
+            if (Input.GetKey(KeyCode.Mouse0))
+                CmdAttack();            
 #endif 
         }
 
@@ -124,7 +121,7 @@ namespace Shooter
         {
 
 #if KEYBOARD
-              if (!isLocalPlayer) return;
+            if (!isLocalPlayer) return;
             movementDirection = Vector3.zero;
             if (Input.GetKey(KeyCode.UpArrow)) movementDirection += Vector3.forward;
             if (Input.GetKey(KeyCode.DownArrow)) movementDirection += Vector3.back;
@@ -139,7 +136,7 @@ namespace Shooter
         }
 
 #if MOUSE
-        LayerMask layerMask;
+        public LayerMask layerMask;
 #endif
         private void Rotate()
         {
@@ -149,9 +146,10 @@ namespace Shooter
             Camera cam = Camera.main;            
 
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray,out RaycastHit raycastHit,20,layerMask,QueryTriggerInteraction.Ignore))
+            if(Physics.Raycast(ray,out RaycastHit raycastHit,100,layerMask,QueryTriggerInteraction.Ignore))
             {
-                movementRotation = Quaternion.LookRotation(raycastHit.point.XZ() + transform.position.Y(), Vector3.up);
+                lookRotation = Quaternion.LookRotation(raycastHit.point.XZ() - transform.position.XZ(), Vector3.up);
+               
             }
 #endif
             rigid.MoveRotation(lookRotation);
@@ -199,8 +197,6 @@ namespace Shooter
             {
                 HitAnimation(hit);
             }
-
-
         }
 
         [ClientRpc]

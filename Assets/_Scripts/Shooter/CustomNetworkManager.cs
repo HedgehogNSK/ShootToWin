@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 namespace Shooter
 {
@@ -10,36 +11,77 @@ namespace Shooter
        
         Location.BattleField battleField;
         List<Player> players = new List<Player>();
-        private void LoadBattleField()
-        {
-            battleField = Instantiate(spawnPrefabs[0]).GetComponent<Location.BattleField>();
-            NetworkServer.Spawn(battleField.gameObject);
-            battleField.Generate(5, 5);
-        }        
 
-        private bool IsBattleFieldLoaded => battleField != null;
+      
+        public override void Start()
+        {           
+            ConnectionStatus status = ConnectionSettings.GetConnectionStatus();
+
+            switch (status)
+            {
+                case ConnectionStatus.Host: { StartHost(); } break;
+                case ConnectionStatus.Client:
+                    {
+                        networkAddress = ConnectionSettings.GetIPMatchAdress();
+                        StartClient();
+                    } break;
+                default: { Debug.LogError("There is no behaviour for this connection status"); } break;
+            }
+
+        }
 
         public override void OnStartServer()
         {
             LoadBattleField();
         }
+
         public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)
         {
-
-            Player player = Instantiate(playerPrefab, battleField.GetRandomPositionFree2Walk, playerPrefab.transform.rotation).GetComponent<Player>();
-            if (NetworkServer.AddPlayerForConnection(conn, player.gameObject))
-            {
-          
-                player.OnDead += (x) => 
-                {
-                    player.RpcRespawnPlayer(x.netIdentity, battleField.GetRandomPositionFree2Walk);
-                };
-                players.Add(player);
-            }
+            Player player = LevelFactory.CreatePlayer(playerPrefab.GetComponent<Player>(), battleField);
+            NetworkServer.AddPlayerForConnection(conn, player.gameObject);
         }
 
-        
-        
+        private void LoadBattleField()
+        {
+            battleField = LevelFactory.CreateLocation(spawnPrefabs[0].GetComponent<Location.BattleField>());
+        }
+        void StopGame()
+        {
+            if (NetworkServer.active) StopHost();
+            else StopClient();
+            GoToMenu();
+        }
+
+        void GoToMenu()
+        {
+            SceneManager.LoadSceneAsync(0);
+        }
+
+        private void OnGUI()
+        {
+            int areaWidth = 150;
+            int areaHeight = 150;
+            int topPadding = 20;
+            
+            GUILayout.BeginArea(new Rect((Screen.width - areaWidth) / 2, topPadding, areaWidth, areaHeight));
+
+            if (NetworkServer.active)
+            {
+                if (GUILayout.Button("Stop Game"))
+                {
+                    StopGame();
+                }
+
+            }
+            else
+            {
+                if (GUILayout.Button("Back to menu"))
+                {
+                    GoToMenu();
+                }
+            }
+            GUILayout.EndArea();
+        }
 
     }
 

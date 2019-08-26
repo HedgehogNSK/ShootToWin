@@ -18,15 +18,6 @@ namespace Shooter.Location
         Transform parentDir;
 
 
-#if KEYBOARD
-        void Update()
-        {
-            if(Input.GetKeyDown(KeyCode.Space))
-            { Generate(height, width); }
-        }
-
-#endif
-
         public void Generate(int x, int y)
         {
             Initialize();
@@ -34,10 +25,7 @@ namespace Shooter.Location
             
             //Creating Battle Field
             battleCells = new Cell[x,y];
-            CellTools.SetCellShare(CellType.Ground, 100);
-            CellTools.SetCellShare(CellType.Grass, 20);
-            CellTools.SetCellShare(CellType.Water, 20);
-            CellTools.SetCellShare(CellType.Wall, 10);
+
             for (int i =0; i!=x; i++)
             {
                 for(int j=0; j!=y; j++)
@@ -69,7 +57,7 @@ namespace Shooter.Location
                     borderCells.Add(Instantiate(cellDictionary[CellType.Wall], new Vector3(-1,  cellDictionary[CellType.Wall].transform.position.y, i), Quaternion.identity, parentDir));
                 }
                
-            }
+            }            
             foreach(var cell in borderCells)
                 NetworkServer.Spawn(cell.gameObject);
         }

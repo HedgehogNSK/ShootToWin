@@ -53,7 +53,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 2822601429
+  m_SceneId: 3548454830
 --- !u!114 &-2343643170542650978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.1
+  syncInterval: 0
   compressRotation: 1
 --- !u!54 &1197307243580631015
 Rigidbody:
@@ -155,12 +155,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8b4957d5e2854f41a811cc2e8594e6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncInterval: 0.1
+  syncInterval: 0
   baseHealth: 100
   baseSpeed: 5
   hand: {fileID: 1197307244847396130}
   weaponPrefab: {fileID: 4969244667655643085, guid: a9fdf097c03911b4da9c908ed2f40de8,
     type: 3}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 785
 --- !u!1 &1197307244847396131
 GameObject:
   m_ObjectHideFlags: 0

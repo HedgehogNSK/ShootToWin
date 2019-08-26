@@ -757,7 +757,6 @@ MonoBehaviour:
   dataType: 1
   minX: 10
   maxX: 245
-  maxParameter: 100
 --- !u!114 &1280405554
 MonoBehaviour:
   m_ObjectHideFlags: 0
