@@ -26,7 +26,7 @@ namespace Shooter
         ParticleSystem particle;
         public override int Damage => baseDamage;
         public override float ReloadTime => baseReloadTime;
-        public override float AttackDispersion => baseShotSpread;
+        public override float AttackSpread => baseShotSpread;
         public override float Range => baseRange;
         public override ParticleSystem HitParticles => hitParticlePrefab;
 
@@ -118,9 +118,9 @@ namespace Shooter
 
             IEnumerable<RaycastHit> hits = GetHitsBeforeWall(origin, direction);
 
-            if (AttackDispersion == 0) return hits;
+            if (AttackSpread == 0) return hits;
 
-            while (currentAngle < AttackDispersion)
+            while (currentAngle < AttackSpread/2)
             {
                 leftDirection = direction.RotateAroundY(currentAngle);
                 rightDirection = direction.RotateAroundY(-currentAngle);
@@ -132,8 +132,8 @@ namespace Shooter
                 currentAngle += deltaAngle;
             }
 
-            leftDirection = direction.RotateAroundY(AttackDispersion);
-            rightDirection = direction.RotateAroundY(-AttackDispersion);
+            leftDirection = direction.RotateAroundY(AttackSpread/2);
+            rightDirection = direction.RotateAroundY(-AttackSpread/2);
 
             hits = hits.Union(GetHitsBeforeWall(origin, leftDirection));
             hits = hits.Union(GetHitsBeforeWall(origin, rightDirection));

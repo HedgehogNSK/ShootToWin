@@ -10,7 +10,7 @@ namespace Shooter.Menu
 {
     public class MenuManager : MonoBehaviour
     {
-
+        private const string gameSceneName = "Game";
         CustomNetworkManager manager;
 
 #pragma warning disable CS0649
@@ -51,10 +51,13 @@ namespace Shooter.Menu
             joinPopUp.SetActive(active);
         }
 
+        AsyncOperation async;
         public void StartGameAs(ConnectionStatus status)
         {
+            if (async!=null && !async.isDone) return;
             ConnectionSettings.SetConnectionStatus(status);
-            SceneManager.LoadSceneAsync(2);
+            async = SceneManager.LoadSceneAsync(gameSceneName);
+            
         }
 
     }

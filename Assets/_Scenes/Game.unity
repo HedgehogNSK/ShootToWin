@@ -340,6 +340,7 @@ MonoBehaviour:
   - {fileID: 6552709994246251411, guid: de2884c18252a49499cee12f735533f2, type: 3}
   - {fileID: 5474102738148196243, guid: eafbccb1136b3a74e80c5b3268609b73, type: 3}
   - {fileID: 5419088378460518128, guid: 35055e29783e3fc43b8d0dee9cd123c9, type: 3}
+  lvlSettings: {fileID: 11400000, guid: fcb761c16c177df4f9f2bfccb599acb3, type: 2}
 --- !u!4 &387251697021586040
 Transform:
   m_ObjectHideFlags: 0

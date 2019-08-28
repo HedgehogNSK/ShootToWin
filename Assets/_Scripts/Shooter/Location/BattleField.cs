@@ -6,7 +6,7 @@ using Mirror;
 
 namespace Shooter.Location
 {
-   
+    [System.Serializable]
     public class BattleField : NetworkBehaviour
     {
 #pragma warning disable CS0649
@@ -17,7 +17,10 @@ namespace Shooter.Location
 
         Transform parentDir;
 
-
+        public void Generate(GameSettings.LocationSize size)
+        {
+            Generate(size.Width,size.Depth);
+        }
         public void Generate(int x, int y)
         {
             Initialize();

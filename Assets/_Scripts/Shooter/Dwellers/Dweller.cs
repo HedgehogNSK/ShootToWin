@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Mirror;
-using Hedge.UI;
 namespace Shooter
 {
     public abstract class Dweller : NetworkBehaviour
@@ -40,6 +37,11 @@ namespace Shooter
             }
         }
 
+        public virtual void BasicSetup(GameSettings.DwellerSettings settings)
+        {
+            baseHealth = settings.BaseHealth;
+            baseSpeed = settings.BaseSpeed;
+        }
         public void SetPosition(Vector3 newPosition)
         {
             transform.position = newPosition;

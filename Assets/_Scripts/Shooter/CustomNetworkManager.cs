@@ -6,13 +6,19 @@ using UnityEngine.SceneManagement;
 
 namespace Shooter
 {
+    
     public class CustomNetworkManager : NetworkManager
     {
-       
+        private const string menuSceneName = "Menu";
+#pragma warning disable CS0649
+        [SerializeField] GameSettings.LevelSettings lvlSettings;
+#pragma warning restore CS0649
+
+
         Location.BattleField battleField;
         List<Player> players = new List<Player>();
-
-      
+        public GameSettings.LevelSettings @LevelSettings => lvlSettings;
+        public Location.BattleField @BattleField => battleField;
         public override void Start()
         {           
             ConnectionStatus status = ConnectionSettings.GetConnectionStatus();
@@ -31,30 +37,31 @@ namespace Shooter
         }
 
         public override void OnStartServer()
-        {
+        {        
             LoadBattleField();
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)
         {
-            Player player = LevelFactory.CreatePlayer(playerPrefab.GetComponent<Player>(), battleField);
+            Player player = LevelFactory.CreatePlayer(lvlSettings, battleField);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
+            
         }
 
         private void LoadBattleField()
         {
-            battleField = LevelFactory.CreateLocation(spawnPrefabs[0].GetComponent<Location.BattleField>());
+            battleField = LevelFactory.CreateLocation(lvlSettings);
+            NetworkServer.Spawn(battleField.gameObject);
         }
         void StopGame()
         {
-            if (NetworkServer.active) StopHost();
-            else StopClient();
-            GoToMenu();
+           StopHost();
+           GoToMenu();
         }
 
         void GoToMenu()
         {
-            SceneManager.LoadSceneAsync(0);
+            SceneManager.LoadSceneAsync(menuSceneName);
         }
 
         private void OnGUI()
@@ -65,7 +72,7 @@ namespace Shooter
             
             GUILayout.BeginArea(new Rect((Screen.width - areaWidth) / 2, topPadding, areaWidth, areaHeight));
 
-            if (NetworkServer.active)
+            if (NetworkServer.active || NetworkClient.isConnected)
             {
                 if (GUILayout.Button("Stop Game"))
                 {

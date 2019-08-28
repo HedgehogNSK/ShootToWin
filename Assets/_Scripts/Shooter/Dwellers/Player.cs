@@ -8,6 +8,8 @@ using Mirror;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using Hedge.Tools;
+using Shooter.GameSettings;
+
 namespace Shooter
 {
     [RequireComponent(typeof(Rigidbody), typeof(NetworkIdentity))]
@@ -15,9 +17,8 @@ namespace Shooter
     {
         const float RESPAWN_TIME = 3;
 #pragma warning disable CS0649
-
-        public Transform hand;
-        [SerializeField] Weapon weaponPrefab;
+        [SerializeField] Transform hand;
+       [SerializeField] Material aimVizualizationMaterial;
 #pragma warning restore CS0649
 
         public Weapon weapon { get; private set; }
@@ -68,6 +69,18 @@ namespace Shooter
             Frags = 0;
         }
 
+        
+
+        public override void BasicSetup(DwellerSettings settings)
+        {
+            base.BasicSetup(settings);
+            if (settings is PlayerSettings)
+            {
+                PlayerSettings playerSettings = (PlayerSettings)settings;
+                SetWeapon(playerSettings.BaseWeaponPrefab);
+            }
+        }
+
         [Command]
         public void CmdOnStartInitialize()
         {
@@ -90,14 +103,17 @@ namespace Shooter
 
         }
 
-        private void SetWeapon()
+        private void SetWeapon(Weapon prefab)
         {
             if (!weapon)
-            { weapon = Instantiate(weaponPrefab, hand); }
+            {
+                weapon = Instantiate(prefab, hand);
+                Camera.onPostRender += FiringZoneHilighter;
+            }
         }
         private void Start()
         {
-            SetWeapon();
+            BasicSetup(((CustomNetworkManager)NetworkManager.singleton).LevelSettings.PlayerSettings);
             ConnectControllers(true);
 
             if (isLocalPlayer)
@@ -159,13 +175,66 @@ namespace Shooter
             movementDirection = new Vector3(direction.x, 0, direction.y).normalized;
         }
 
+        bool highlight = false;
         public void TakeAim(Joystick joystick, Vector2 forward, bool fire)
         {
-
-            if (fire) CmdAttack();
+            highlight = false;
+            if (fire)
+            {
+                CmdAttack();
+                
+            }
             else
+            {
                 SetRotation(forward);
+                highlight = true;
+            }
         }
+
+
+        private void FiringZoneHilighter(Camera cam)
+        {
+            if (!highlight) return;
+            if (!cam.GetComponent<PlayerFollower>()) return;
+
+            if (!aimVizualizationMaterial)
+            {
+                Debug.LogError("Material for aim vizualization isn't set");
+                return;
+            }
+            Debug.Log("Drawing");
+            Vector3 weaponPos = weapon.transform.position;
+            float spread = weapon.AttackSpread;
+            float range = weapon.Range;
+            Vector3 direction = transform.forward;
+
+            aimVizualizationMaterial.SetPass(0);
+
+
+            GL.Begin(GL.TRIANGLES);
+            GL.Color(new Color(0.1f, 0.5f, 0.2f, 0.3f));
+
+
+            Vector3 nextPoint = weaponPos + direction.RotateAroundY(-spread / 2) * range;
+            Vector3 rightFarthestPoint;
+            int points = 1000;
+
+            float spreadPart = spread / points;
+            for (int i = 0; i != points; i++)
+            {
+                GL.Vertex3(weaponPos.x, weaponPos.y, weaponPos.z);
+
+                rightFarthestPoint = nextPoint;
+                nextPoint = weaponPos + direction.RotateAroundY(i * spreadPart - spread / 2) * range;
+                GL.Vertex3(rightFarthestPoint.x, rightFarthestPoint.y, rightFarthestPoint.z);
+                GL.Vertex3(nextPoint.x, nextPoint.y, nextPoint.z);
+            }
+
+            GL.End();
+
+
+        }
+
         void SetRotation(Vector2 forward)
         {
             lookRotation = Quaternion.LookRotation(new Vector3(forward.x, 0, forward.y), Vector3.up);
@@ -181,8 +250,14 @@ namespace Shooter
         [ClientRpc]
         void RpcAttack()
         {
-            if (weapon == null) return;
-            weapon.Attack(this, transform.forward);
+            if (weapon)
+            {
+                weapon.Attack(this, transform.forward);
+            }
+            else
+            {
+                Debug.LogWarning("Player have no weapon");
+            }
         }
 
         public void GetStrike(HitArgs hit)
@@ -200,23 +275,19 @@ namespace Shooter
         }
 
         [ClientRpc]
-        public void RpcRespawnPlayer(NetworkIdentity Identity, Vector3 position)
+        public void RpcRespawnPlayer(Vector3 position, float respawnTime)
         {
-            Player player = Identity.GetComponent<Player>();
-            if (player)
-                player.SetPosition(position);
-
-            Location.BattleField battleField = FindObjectOfType<Location.BattleField>();
-            if (battleField)
-                battleField.StartCoroutine(RespawnPlayerCoroutine(RESPAWN_TIME, Identity));
+            SetPosition(position);
+            NetworkManager.singleton.StartCoroutine(RespawnPlayerCoroutine(respawnTime));
         }
 
-        IEnumerator RespawnPlayerCoroutine(float time, NetworkIdentity identity)
+        IEnumerator RespawnPlayerCoroutine(float time)
         {
             yield return new WaitForSecondsRealtime(time);
-            Start();
-            identity.gameObject.SetActive(true);
-            
+            CmdOnStartInitialize();
+            gameObject.SetActive(true);
+            ConnectControllers(true);
+
         }
 
         protected override void Die()
@@ -244,9 +315,9 @@ namespace Shooter
             }
             else
             {
-                SceneManager.UnloadSceneAsync(1);
                 MoveJoystick.OnMove -= SetMoveDirection;
                 AttackJoystick.OnAim -= TakeAim;
+                SceneManager.UnloadSceneAsync(1);
             }
         }
 

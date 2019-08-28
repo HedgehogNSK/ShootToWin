@@ -24,13 +24,13 @@ namespace Shooter
         }
 
         void MoveCamera()
-        {
-            if(myPlayer)
-            cam.transform.position = myPlayer.transform.position +camOffset;
-            else
+        {           
+            if(!myPlayer)
             {
-                myPlayer = FindObjectsOfType<Player>().SingleOrDefault(pl => pl.isLocalPlayer);
+                myPlayer = FindObjectsOfType<Player>().SingleOrDefault(pl => pl.isLocalPlayer);                  
             }
+            if (myPlayer)
+                cam.transform.position = myPlayer.transform.position + camOffset;
         }
 
 

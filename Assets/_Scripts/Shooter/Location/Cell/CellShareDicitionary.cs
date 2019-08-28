@@ -3,7 +3,8 @@
 namespace Shooter.Location
 {
     [System.Serializable]
-    public class CellDictionary : SerializableDictionary<CellType, Cell>
+    public class CellShareDictionary : SerializableDictionary<CellType, int>
     {
     }
+
 }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using UnityObject = UnityEngine.Object;
+﻿using UnityEditor;
 
-using Hedge.Tools;
 namespace Shooter.Location
 {
     [CustomPropertyDrawer(typeof(CellDictionary))]
