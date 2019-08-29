@@ -178,7 +178,7 @@ namespace Shooter
         bool highlight = false;
         public void TakeAim(Joystick joystick, Vector2 forward, bool fire)
         {
-            highlight = false;
+            //highlight = false;
             if (fire)
             {
                 CmdAttack();
@@ -202,7 +202,7 @@ namespace Shooter
                 Debug.LogError("Material for aim vizualization isn't set");
                 return;
             }
-            Debug.Log("Drawing");
+            //Debug.Log("Drawing");
             Vector3 weaponPos = weapon.transform.position;
             float spread = weapon.AttackSpread;
             float range = weapon.Range;
@@ -212,7 +212,7 @@ namespace Shooter
 
 
             GL.Begin(GL.TRIANGLES);
-            GL.Color(new Color(0.1f, 0.5f, 0.2f, 0.3f));
+            //GL.Color(new Color(0.1f, 1f, 0.2f, 0.3f));
 
 
             Vector3 nextPoint = weaponPos + direction.RotateAroundY(-spread / 2) * range;

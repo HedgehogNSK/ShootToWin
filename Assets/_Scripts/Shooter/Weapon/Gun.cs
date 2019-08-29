@@ -73,7 +73,6 @@ namespace Shooter
             {            
                 particle = Instantiate(shotParticlePrefab, muzzle);
                 particle.transform.localPosition = Vector3.zero;
-                Destroy(particle.gameObject, particle.main.duration);
                 
             }
             
@@ -91,7 +90,6 @@ namespace Shooter
             {
                 ParticleSystem particle = Instantiate(HitParticles);
                 particle.transform.position = target;                
-                Destroy(particle.gameObject, particle.main.duration);
                 
             }
 
